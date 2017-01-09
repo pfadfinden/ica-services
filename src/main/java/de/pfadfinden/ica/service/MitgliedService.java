@@ -32,10 +32,10 @@ public class MitgliedService {
         HttpGet httpGet = new HttpGet(builder.build());
         Type type = new TypeToken<IcaMitglied>(){}.getType();
         IcaMitglied icaMitglied = icaConnector.executeApiRequest(httpGet,type);
-        return Optional.of(icaMitglied);
+        return Optional.ofNullable(icaMitglied);
     }
 
-    public Optional<Collection<IcaMitgliedListElement>> getMitgliedBySearch(IcaSearchedValues icaSearchedValues,
+    public ArrayList<IcaMitgliedListElement> getMitgliedBySearch(IcaSearchedValues icaSearchedValues,
                                                                             Integer page, Integer start, Integer limit)
             throws URISyntaxException, IOException, IcaApiException {
 
@@ -47,9 +47,8 @@ public class MitgliedService {
 
         HttpGet httpGet = new HttpGet(builder.build());
 
-        Type type = new TypeToken<Collection<IcaMitgliedListElement>>() {}.getType();
-        ArrayList<IcaMitgliedListElement> mitglieder = icaConnector.executeApiRequest(httpGet,type);
-        return Optional.of(mitglieder);
+        Type type = new TypeToken<ArrayList<IcaMitgliedListElement>>() {}.getType();
+        return icaConnector.executeApiRequest(httpGet,type);
     }
 
 }

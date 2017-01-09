@@ -11,12 +11,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
-
+import static com.github.npathai.hamcrestopt.OptionalMatchers.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
 public class MitgliedServiceTest {
 
@@ -41,24 +42,37 @@ public class MitgliedServiceTest {
     }
 
     @Test
-    public void getMitgliedById() throws Exception {
+    public void getMitgliedByIdEmptyResult() throws Exception {
+        Optional<IcaMitglied> mitglied = mitgliedService.getMitgliedById(999);
+        assertThat(mitglied,isEmpty());
+    }
+
+    @Test
+    public void getMitgliedByIdOneResult() throws Exception {
         Optional<IcaMitglied> mitglied = mitgliedService.getMitgliedById(11111);
+        assertThat(mitglied, isPresent());
         mitglied.ifPresent(
-                icaMitglied -> assertEquals(icaMitglied.getNachname(),"Uteiumetzgeö")
+                icaMitglied -> assertThat(icaMitglied.getNachname(),is("Uteiumetzgeö"))
         );
     }
 
     @Test
-    public void getMitgliedBySearch() throws Exception {
+    public void getMitgliedBySearchEmptyResult() throws Exception {
+        IcaSearchedValues searchedValues = new IcaSearchedValues();
+        searchedValues.setMitgliedsNummber("999");
+        ArrayList<IcaMitgliedListElement> mitglieder = mitgliedService.getMitgliedBySearch(searchedValues,1,0,100);
+        assertThat(mitglieder,is(notNullValue()));
+        assertThat(mitglieder.size(),is(0));
+    }
+
+    @Test
+    public void getMitgliedBySearchOneResult() throws Exception {
         IcaSearchedValues searchedValues = new IcaSearchedValues();
         searchedValues.setMitgliedsNummber("11111");
 
-        Optional<Collection<IcaMitgliedListElement>> mitglieder = mitgliedService.getMitgliedBySearch(searchedValues,1,0,100);
-
-        mitglieder.ifPresent(
-                icaMitglieder -> assertEquals(icaMitglieder.size(),1)
-        );
-
+        ArrayList<IcaMitgliedListElement> mitglieder = mitgliedService.getMitgliedBySearch(searchedValues,1,0,100);
+        assertThat(mitglieder.size(),is(1));
+        assertThat(mitglieder.get(0),instanceOf(IcaMitgliedListElement.class));
     }
 
 }

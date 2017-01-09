@@ -11,7 +11,9 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Properties;
 
-import static org.junit.Assert.*;
+import static com.github.npathai.hamcrestopt.OptionalMatchers.*;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
 
 public class GruppierungServiceTest {
 
@@ -33,12 +35,13 @@ public class GruppierungServiceTest {
     @Test
     public void getChildGruppierungen() throws Exception {
         Collection<IcaGruppierung> icaGruppierung = gruppierungService.getChildGruppierungen(1);
-        assertEquals(icaGruppierung.size(),14);
+        assertThat(icaGruppierung,is(notNullValue()));
+        assertThat(icaGruppierung.size(),is(14));
     }
 
     @Test
     public void getRootGruppierung() throws Exception {
         IcaGruppierung icaGruppierung = gruppierungService.getRootGruppierung();
-        assertNotNull(icaGruppierung);
+        assertThat(icaGruppierung,is(notNullValue()));
     }
 }
