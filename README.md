@@ -1,4 +1,12 @@
 
+## Dependencies
+
+| group                     | artifact         | version |
+| ------------------------- | ---------------- | ------- |
+| org.apache.httpcomponents | httpclient       | 4.5.2   |
+| com.google.code.gson      | gson             | 2.8.0   |
+| commons-logging           | commons-logging  | 1.2     |
+
 
 ## Dokumentation
 

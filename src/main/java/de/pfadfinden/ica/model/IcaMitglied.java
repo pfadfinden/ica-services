@@ -1,6 +1,5 @@
 package de.pfadfinden.ica.model;
 
-import com.google.common.base.MoreObjects;
 import com.google.gson.annotations.SerializedName;
 
 import java.time.LocalDate;
@@ -67,18 +66,6 @@ public class IcaMitglied {
 
     private int version;
     private LocalDateTime lastUpdated;
-
-    public String toString(){
-        return MoreObjects.toStringHelper(this)
-                .add("id", this.id)
-                .add("nachname", this.nachname)
-                .add("vorname",this.vorname)
-                .add("geschlecht",this.geschlecht)
-                .add("geburtsDatum",this.geburtsDatum)
-                .add("gruppierung",this.gruppierung)
-                .add("gruppierungId",this.gruppierungId)
-                .toString();
-    }
 
     /* getter and setter */
 
