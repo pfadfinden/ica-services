@@ -32,7 +32,7 @@ public class MitgliedServiceTest {
 
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(
                 properties.getProperty("icausername"), properties.getProperty("icapassword"));
-        this.icaConnector = new IcaConnector(IcaServer.BDP_QA,credentials);
+        this.icaConnector = new IcaConnector(IcaServer.BDP_QA, credentials);
         this.mitgliedService = new MitgliedService(icaConnector);
     }
 
@@ -44,7 +44,7 @@ public class MitgliedServiceTest {
     @Test
     public void getMitgliedByIdEmptyResult() throws Exception {
         Optional<IcaMitglied> mitglied = mitgliedService.getMitgliedById(999);
-        assertThat(mitglied,isEmpty());
+        assertThat(mitglied, isEmpty());
     }
 
     @Test
@@ -52,7 +52,7 @@ public class MitgliedServiceTest {
         Optional<IcaMitglied> mitglied = mitgliedService.getMitgliedById(11111);
         assertThat(mitglied, isPresent());
         mitglied.ifPresent(
-                icaMitglied -> assertThat(icaMitglied.getNachname(),is("Uteiumetzgeö"))
+                icaMitglied -> assertThat(icaMitglied.getNachname(), is("Uteiumetzgeö"))
         );
     }
 
@@ -60,9 +60,9 @@ public class MitgliedServiceTest {
     public void getMitgliedBySearchEmptyResult() throws Exception {
         IcaSearchedValues searchedValues = new IcaSearchedValues();
         searchedValues.setMitgliedsNummber("999");
-        ArrayList<IcaMitgliedListElement> mitglieder = mitgliedService.getMitgliedBySearch(searchedValues,1,0,100);
-        assertThat(mitglieder,is(notNullValue()));
-        assertThat(mitglieder.size(),is(0));
+        ArrayList<IcaMitgliedListElement> mitglieder = mitgliedService.getMitgliedBySearch(searchedValues, 1, 0, 100);
+        assertThat(mitglieder, is(notNullValue()));
+        assertThat(mitglieder.size(), is(0));
     }
 
     @Test
@@ -70,9 +70,9 @@ public class MitgliedServiceTest {
         IcaSearchedValues searchedValues = new IcaSearchedValues();
         searchedValues.setMitgliedsNummber("11111");
 
-        ArrayList<IcaMitgliedListElement> mitglieder = mitgliedService.getMitgliedBySearch(searchedValues,1,0,100);
-        assertThat(mitglieder.size(),is(1));
-        assertThat(mitglieder.get(0),instanceOf(IcaMitgliedListElement.class));
+        ArrayList<IcaMitgliedListElement> mitglieder = mitgliedService.getMitgliedBySearch(searchedValues, 1, 0, 100);
+        assertThat(mitglieder.size(), is(1));
+        assertThat(mitglieder.get(0), instanceOf(IcaMitgliedListElement.class));
     }
 
 }

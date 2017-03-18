@@ -39,7 +39,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IcaConnector implements Closeable{
+public class IcaConnector implements Closeable {
 
     private CloseableHttpClient closeableHttpClient;
     private Gson gson;
@@ -78,22 +78,23 @@ public class IcaConnector implements Closeable{
 
         HttpPost httpPost = new HttpPost(uri);
         List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("username",credentials.getUserName()));
-        nvps.add(new BasicNameValuePair("password",credentials.getPassword()));
+        nvps.add(new BasicNameValuePair("username", credentials.getUserName()));
+        nvps.add(new BasicNameValuePair("password", credentials.getPassword()));
         nvps.add(new BasicNameValuePair("Login", "API"));
         nvps.add(new BasicNameValuePair("redirectTo", "./pages/loggedin.jsp"));
         httpPost.setEntity(new UrlEncodedFormEntity(nvps));
 
-        try(
-            CloseableHttpResponse response = closeableHttpClient.execute(httpPost)
+        try (
+                CloseableHttpResponse response = closeableHttpClient.execute(httpPost)
         ) {
             HttpEntity responseEntity = response.getEntity();
             String resultData = EntityUtils.toString(responseEntity);
 
-            Type type = new TypeToken<IcaApiResponse<Object>>() {}.getType();
-            IcaApiResponse<Object> resp = gson.fromJson(resultData,type);
+            Type type = new TypeToken<IcaApiResponse<Object>>() {
+            }.getType();
+            IcaApiResponse<Object> resp = gson.fromJson(resultData, type);
 
-            if ( response.getStatusLine().getStatusCode() == 200) {
+            if (response.getStatusLine().getStatusCode() == 200) {
                 isAuthenticated = true;
                 log.debug("Security: Authenticated to ICA using API token: " + resp.getApiSessionToken());
             } else {
@@ -113,9 +114,9 @@ public class IcaConnector implements Closeable{
     }
 
     public <T> T executeApiRequest(HttpUriRequest request, Type resultType) throws IOException, IcaApiException {
-        try(
-            CloseableHttpResponse response = closeableHttpClient.execute(request)
-        ){
+        try (
+                CloseableHttpResponse response = closeableHttpClient.execute(request)
+        ) {
             HttpEntity responseEntity = response.getEntity();
             Reader respReader = new InputStreamReader(responseEntity.getContent());
 
@@ -124,11 +125,15 @@ public class IcaConnector implements Closeable{
 
             IcaApiResponse<IcaResponse<T>> result = gson.fromJson(respReader, typeWithApiResponse);
 
-            if(result.getStatusCode() != 0){
+            if (result == null || result.getStatusCode() != 0) {
                 throw new IcaApiException(result);
             }
             return result.getResponse().getData();
         }
+    }
+
+    public CloseableHttpClient getCloseableHttpClient() {
+        return this.closeableHttpClient;
     }
 
     public String toJson(Object o) {

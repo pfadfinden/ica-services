@@ -8,6 +8,9 @@ import java.net.URISyntaxException;
 
 public class IcaURIBuilder extends URIBuilder {
 
+    public static final String URL_PDFREPORT = "/nami/grp-reports/filtered-for-grpadmin/run-pdf";
+    public static final String URL_ONETIMTEDOWNLOAD = "/OneTimeDownload/otd";
+
     /**
      * URL, die zum Login in NaMi verwendet wird.
      */
@@ -66,15 +69,14 @@ public class IcaURIBuilder extends URIBuilder {
      */
     public static final String URL_UNTERGLIEDERUNGEN = "/orgadmin/untergliederung";
 
-    public IcaURIBuilder(){
+    public IcaURIBuilder() {
         super();
         setScheme("https");
         setHost("qa.mv.meinbdp.de");
-
     }
 
     @Override
-    public URI build(){
+    public URI build() {
         try {
             return super.build();
         } catch (URISyntaxException e) {

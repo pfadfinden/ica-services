@@ -11,8 +11,8 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Properties;
 
-import static com.github.npathai.hamcrestopt.OptionalMatchers.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 public class GruppierungServiceTest {
