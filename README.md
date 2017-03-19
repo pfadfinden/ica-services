@@ -7,6 +7,21 @@
 | com.google.code.gson      | gson             | 2.8.0   |
 | commons-logging           | commons-logging  | 1.2     |
 
+## Installation
+
+Die Library ist als Maven Projekt ausgelegt und sollte als Abhängigkeit hinzugefügt werden.
+```xml
+<dependencies>
+    <dependency>
+        <groupId>de.pfadfinden</groupId>
+        <artifactId>ica-services</artifactId>
+        <version>1.1-SNAPSHOT</version>
+    </dependency>
+<dependencies>
+```
+
+> Die Library steht aktuell noch nicht im JCentral zur Verfügung.
+
 
 ## Dokumentation
 
@@ -41,6 +56,10 @@ try(
     // Nutzung für ein oder mehrere Serviceaufrufe
 }
 ```
+
+### Logging
+Das Logging erfolgt per `commons-logging`. Abhängig vom eingesetzten Logging Tool kann dies z.B. via `jcl-over-slf4j` 
+umgeleitet werden.
 
 ### MitgliedService
 Der einfachste Anwendungsfall des Mitgliedservice ist die Abfrage der Mitgliedsdaten zu einer eindeutigen 
