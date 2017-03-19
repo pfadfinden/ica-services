@@ -3,7 +3,7 @@
 
 | group                     | artifact         | version |
 | ------------------------- | ---------------- | ------- |
-| org.apache.httpcomponents | httpclient       | 4.5.2   |
+| org.apache.httpcomponents | httpclient       | 4.5.3   |
 | com.google.code.gson      | gson             | 2.8.0   |
 | commons-logging           | commons-logging  | 1.2     |
 
@@ -70,3 +70,25 @@ mitglieder.ifPresent(
 ```
 
 ### GruppierungService
+
+
+### ReportService
+Über die Report Funktion der Mitgliederverwaltung könnnen Standardberichte wie z.B. Mitgliederlisten in den Formaten 
+PDF (Portable Document Format, z.B. Adobe Reader) und XLS (Microsoft Excel) generiert werden. 
+
+```java
+public byte[] getReport(int reportId, int gruppierungId, HashMap<String, Object> reportParams)
+
+```
+
+Der Aufruf erfolgt mit der ID des gewünschten Reports, der Nummer der Gruppierung, auf dessen Ebene der 
+Report ausgeführt werden soll und optionalen `reportParams` als HashMap.
+
+```java
+// Beispiel Report 105 zu Gruppierung 1 ausführen. Mit Mitgliedsnummer als Parameter.
+ReportService reportService = new ReportService(icaConnector);
+HashMap<String, Object> reportParams = new HashMap<>();
+reportParams.put("A_Mitgliedsnummer", 11111);
+byte[] report = reportService.getReport(105, 1, reportParams);
+
+```
