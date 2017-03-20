@@ -113,3 +113,8 @@ reportParams.put("A_Mitgliedsnummer", 11111);
 byte[] report = reportService.getReport(105, 1, reportParams);
 
 ```
+
+Die Reports werden jeweils in ihrem Standarddateiformat erstellt, dies ist abhängig vom Report PDF oder XLS. Im
+Übergabeparameter `reportParams` kann jedoch der Wert `reportResultTypeId` mit dem Wert `XLS` oder `PDF` mitgegeben 
+werden, um das Standardausgabeformat zu überschreiben. Das ist jedoch nicht zu empfehlen, da das Layout der Reports
+für ihr Standardausgabeformat optimiert ist.

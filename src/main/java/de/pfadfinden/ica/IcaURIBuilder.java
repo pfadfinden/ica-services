@@ -8,7 +8,7 @@ import java.net.URISyntaxException;
 
 public class IcaURIBuilder extends URIBuilder {
 
-    public static final String URL_PDFREPORT = "/nami/grp-reports/filtered-for-grpadmin/run-pdf";
+    public static final String URL_PDFREPORT = "/nami/grp-reports/filtered-for-grpadmin/run-all";
     public static final String URL_ONETIMTEDOWNLOAD = "/OneTimeDownload/otd";
 
     /**
