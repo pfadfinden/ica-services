@@ -5,7 +5,8 @@
 | ------------------------- | ---------------- | ------- |
 | org.apache.httpcomponents | httpclient       | 4.5.3   |
 | com.google.code.gson      | gson             | 2.8.0   |
-| commons-logging           | commons-logging  | 1.2     |
+| org.slf4j                 | slf4j-api        | 1.7.25  |
+| org.slf4j                 | jcl-over-slf4j   | 1.7.25  |
 
 ## Installation
 
@@ -58,8 +59,9 @@ try(
 ```
 
 ### Logging
-Das Logging erfolgt per `commons-logging`. Abhängig vom eingesetzten Logging Tool kann dies z.B. via `jcl-over-slf4j` 
-umgeleitet werden.
+Das Logging der Library und derer Abhängigkeiten erfolgt an SLF4J (Simple Logging Facade for Java). Der Nutzer dieser
+Library sollte deshalb ein SLF4J kompatibles Logging Framework (z.B. Logback) oder eine Bridge (slf4j->log4j, slf4j->jcl)
+einbinden.
 
 ### MitgliedService
 Der einfachste Anwendungsfall des Mitgliedservice ist die Abfrage der Mitgliedsdaten zu einer eindeutigen 

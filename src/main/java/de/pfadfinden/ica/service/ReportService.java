@@ -5,8 +5,6 @@ import com.google.gson.reflect.TypeToken;
 import de.pfadfinden.ica.IcaConnector;
 import de.pfadfinden.ica.IcaURIBuilder;
 import de.pfadfinden.ica.execption.IcaException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -14,6 +12,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -22,7 +22,7 @@ import java.net.URI;
 public class ReportService {
 
     private IcaConnector icaConnector;
-    private static Log log = LogFactory.getLog(ReportService.class);
+    final Logger logger = LoggerFactory.getLogger(ReportService.class);
 
     public ReportService(IcaConnector icaConnector) {
         this.icaConnector = icaConnector;
@@ -41,15 +41,15 @@ public class ReportService {
         httpPost.setEntity(postEntity);
         httpPost.addHeader("Accept", "application/json");
 
-        log.info("Prepare Report URI: " + httpPost.getURI());
-        log.info("Request body: " + EntityUtils.toString(postEntity));
+        logger.info("Prepare Report URI: {}",httpPost.getURI());
+        logger.info("Request body: {}",EntityUtils.toString(postEntity));
 
         Type type = new TypeToken<String>() {
         }.getType();
         icaConnector.executeApiRequest(httpPost, type);
 
         URI downloadUri = icaConnector.getURIBuilder(IcaURIBuilder.URL_ONETIMTEDOWNLOAD, false).build();
-        log.info("Request Report URI: " + downloadUri);
+        logger.info("Request Report URI: {}",downloadUri);
 
         HttpGet httpget = new HttpGet(downloadUri);
         try (
