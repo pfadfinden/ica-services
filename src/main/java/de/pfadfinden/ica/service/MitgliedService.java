@@ -8,6 +8,8 @@ import de.pfadfinden.ica.model.IcaMitglied;
 import de.pfadfinden.ica.model.IcaMitgliedListElement;
 import de.pfadfinden.ica.model.IcaSearchedValues;
 import org.apache.http.client.methods.HttpGet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -18,36 +20,42 @@ import java.util.Optional;
 public class MitgliedService {
 
     private IcaConnector icaConnector;
+    private final Logger logger = LoggerFactory.getLogger(MitgliedService.class);
 
-    public MitgliedService(IcaConnector icaConnector){
+    public MitgliedService(IcaConnector icaConnector) {
         this.icaConnector = icaConnector;
     }
 
     public Optional<IcaMitglied> getMitgliedById(int id) throws IOException, URISyntaxException, IcaApiException {
+        logger.debug("Lookup IcaMitglied #{}",id);
 
         IcaURIBuilder builder = icaConnector.getURIBuilder(IcaURIBuilder.URL_MITGLIED);
         builder.appendPath(Integer.toString(id));
 
         HttpGet httpGet = new HttpGet(builder.build());
-        Type type = new TypeToken<IcaMitglied>(){}.getType();
-        IcaMitglied icaMitglied = icaConnector.executeApiRequest(httpGet,type);
+        Type type = new TypeToken<IcaMitglied>() {
+        }.getType();
+        IcaMitglied icaMitglied = icaConnector.executeApiRequest(httpGet, type);
+        logger.debug("Return IcaMitglied {}",icaMitglied);
         return Optional.ofNullable(icaMitglied);
     }
 
     public ArrayList<IcaMitgliedListElement> getMitgliedBySearch(IcaSearchedValues icaSearchedValues,
-                                                                            Integer page, Integer start, Integer limit)
+                                                                 Integer page, Integer start, Integer limit)
             throws URISyntaxException, IOException, IcaApiException {
+        logger.debug("Lookup IcaMitglied by searchedValues: {}",icaSearchedValues);
 
         IcaURIBuilder builder = icaConnector.getURIBuilder(IcaURIBuilder.URL_SEARCH);
         builder.setParameter("page", page.toString());
         builder.setParameter("start", start.toString());
         builder.setParameter("limit", limit.toString());
-        builder.setParameter("searchedValues",icaConnector.toJson(icaSearchedValues));
+        builder.setParameter("searchedValues", icaConnector.toJson(icaSearchedValues));
 
         HttpGet httpGet = new HttpGet(builder.build());
 
-        Type type = new TypeToken<ArrayList<IcaMitgliedListElement>>() {}.getType();
-        return icaConnector.executeApiRequest(httpGet,type);
+        Type type = new TypeToken<ArrayList<IcaMitgliedListElement>>() {
+        }.getType();
+        return icaConnector.executeApiRequest(httpGet, type);
     }
 
 }

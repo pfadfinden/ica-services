@@ -50,7 +50,8 @@ public class IcaConnector implements Closeable {
 
     private IcaServer icaServer;
 
-    public IcaConnector(IcaServer icaServer, UsernamePasswordCredentials credentials) throws IcaAuthenticationException {
+    public IcaConnector(IcaServer icaServer, UsernamePasswordCredentials credentials) throws
+            IcaAuthenticationException {
         gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateConverter())
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
@@ -71,7 +72,8 @@ public class IcaConnector implements Closeable {
         }
     }
 
-    private void authenticate(UsernamePasswordCredentials credentials) throws URISyntaxException, IOException, IcaAuthenticationException {
+    private void authenticate(UsernamePasswordCredentials credentials) throws URISyntaxException, IOException,
+            IcaAuthenticationException {
         if (isAuthenticated) return;
 
         URI uri = IcaURIBuilder.getLoginURIBuilder(this.icaServer).build();
@@ -113,7 +115,7 @@ public class IcaConnector implements Closeable {
         log.debug("Security: Session terminated and client closed.");
     }
 
-    public <T> T executeApiRequest(HttpUriRequest request, Type resultType) throws IOException, IcaApiException {
+    public <T> T executeApiRequest(HttpUriRequest request, Type resultType) throws IcaApiException {
         try (
                 CloseableHttpResponse response = closeableHttpClient.execute(request)
         ) {
@@ -129,6 +131,8 @@ public class IcaConnector implements Closeable {
                 throw new IcaApiException(result);
             }
             return result.getResponse().getData();
+        } catch (Exception e) {
+            throw new IcaApiException(e);
         }
     }
 

@@ -15,20 +15,19 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
 
 public class ReportService {
 
     private IcaConnector icaConnector;
-    final Logger logger = LoggerFactory.getLogger(ReportService.class);
+    private final Logger logger = LoggerFactory.getLogger(ReportService.class);
 
     public ReportService(IcaConnector icaConnector) {
         this.icaConnector = icaConnector;
     }
 
-    public byte[] getReport(int reportId, int gruppierungId, Object reportParams) throws IOException, IcaException {
+    public byte[] getReport(int reportId, int gruppierungId, Object reportParams) throws IcaException {
 
         IcaURIBuilder builder = icaConnector.getURIBuilder(IcaURIBuilder.URL_PDFREPORT);
         builder.addParameter("id", Integer.toString(reportId));
@@ -41,23 +40,26 @@ public class ReportService {
         httpPost.setEntity(postEntity);
         httpPost.addHeader("Accept", "application/json");
 
-        logger.info("Prepare Report URI: {}",httpPost.getURI());
-        logger.info("Request body: {}",EntityUtils.toString(postEntity));
+        try {
+            logger.debug("Request ICA report: {} Body: {}", httpPost.getURI(), EntityUtils.toString(postEntity));
+        } catch (Exception ignored) {
+        }
 
         Type type = new TypeToken<String>() {
         }.getType();
         icaConnector.executeApiRequest(httpPost, type);
 
         URI downloadUri = icaConnector.getURIBuilder(IcaURIBuilder.URL_ONETIMTEDOWNLOAD, false).build();
-        logger.info("Request Report URI: {}",downloadUri);
+        logger.debug("Response ICA report: {}", downloadUri);
 
         HttpGet httpget = new HttpGet(downloadUri);
         try (
                 CloseableHttpResponse response = icaConnector.getCloseableHttpClient().execute(httpget)
         ) {
             HttpEntity entity = response.getEntity();
-            byte[] report = EntityUtils.toByteArray(entity);
-            return report;
+            return EntityUtils.toByteArray(entity);
+        } catch (Exception e) {
+            throw new IcaException(e);
         }
     }
 }

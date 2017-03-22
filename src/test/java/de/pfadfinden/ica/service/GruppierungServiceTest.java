@@ -28,20 +28,20 @@ public class GruppierungServiceTest {
 
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(
                 properties.getProperty("icausername"), properties.getProperty("icapassword"));
-        this.icaConnector = new IcaConnector(IcaServer.BDP_QA,credentials);
+        this.icaConnector = new IcaConnector(IcaServer.BDP_QA, credentials);
         this.gruppierungService = new GruppierungService(icaConnector);
     }
 
     @Test
     public void getChildGruppierungen() throws Exception {
         Collection<IcaGruppierung> icaGruppierung = gruppierungService.getChildGruppierungen(1);
-        assertThat(icaGruppierung,is(notNullValue()));
-        assertThat(icaGruppierung.size(),is(14));
+        assertThat(icaGruppierung, is(notNullValue()));
+        assertThat(icaGruppierung.size(), is(14));
     }
 
     @Test
     public void getRootGruppierung() throws Exception {
         IcaGruppierung icaGruppierung = gruppierungService.getRootGruppierung();
-        assertThat(icaGruppierung,is(notNullValue()));
+        assertThat(icaGruppierung, is(notNullValue()));
     }
 }

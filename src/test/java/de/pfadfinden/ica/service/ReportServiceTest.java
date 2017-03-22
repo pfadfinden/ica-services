@@ -37,8 +37,7 @@ public class ReportServiceTest {
     public void getReport() throws Exception {
         HashMap<String, Object> reportParams = new HashMap<>();
         reportParams.put("A_Mitgliedsnummer", 11111);
-        byte[] report = reportService.getReport(105, 1, reportParams);
+        reportService.getReport(105, 1, reportParams);
     }
-
 
 }
