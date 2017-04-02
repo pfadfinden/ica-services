@@ -20,6 +20,7 @@ import java.net.URI;
 
 public class ReportService {
 
+    static private final Gson gson = new Gson();
     private IcaConnector icaConnector;
     private final Logger logger = LoggerFactory.getLogger(ReportService.class);
 
@@ -33,24 +34,18 @@ public class ReportService {
         builder.addParameter("id", Integer.toString(reportId));
         builder.addParameter("crtGruppierung", Integer.toString(gruppierungId));
 
-        Gson gson = new Gson();
-
         StringEntity postEntity = new StringEntity(gson.toJson(reportParams), ContentType.APPLICATION_JSON);
         HttpPost httpPost = new HttpPost(builder.build());
         httpPost.setEntity(postEntity);
         httpPost.addHeader("Accept", "application/json");
 
-        try {
-            logger.debug("Request ICA report: {} Body: {}", httpPost.getURI(), EntityUtils.toString(postEntity));
-        } catch (Exception ignored) {
-        }
+        logger.debug("Request ICA report generation URI: {}", httpPost.getURI());
 
-        Type type = new TypeToken<String>() {
-        }.getType();
+        Type type = new TypeToken<String>() {}.getType();
         icaConnector.executeApiRequest(httpPost, type);
 
         URI downloadUri = icaConnector.getURIBuilder(IcaURIBuilder.URL_ONETIMTEDOWNLOAD, false).build();
-        logger.debug("Response ICA report: {}", downloadUri);
+        logger.debug("Request ICA report download URI: {}", downloadUri);
 
         HttpGet httpget = new HttpGet(downloadUri);
         try (

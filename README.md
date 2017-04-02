@@ -16,7 +16,7 @@ Die Library ist als Maven Projekt ausgelegt und sollte als Abhängigkeit hinzuge
     <dependency>
         <groupId>de.pfadfinden</groupId>
         <artifactId>ica-services</artifactId>
-        <version>1.1-SNAPSHOT</version>
+        <version>1.3-SNAPSHOT</version>
     </dependency>
 <dependencies>
 ```
@@ -35,8 +35,7 @@ Eine Instanz des IcaConnectors kann für ein oder mehrere Serviceaufrufe verwend
 für erneuten Aufbau der Session. Bei längerer Nicht-Benutzung kann die Session jedoch auslaufen.
 
 ```java
-UsernamePasswordCredentials icaCredentials = new UsernamePasswordCredentials("USER","PASSWORD");
-IcaConnector icaConnector = new IcaConnector(IcaServer.BDP_QA,credentials);
+IcaConnector icaConnector = new IcaConnector(IcaServer.BDP_QA,"username","password");
 ```
 
 Um die API Session sicher zu beenden und die Ressourcen des HTTP Clients freizugeben, muss der IcaConnector nach

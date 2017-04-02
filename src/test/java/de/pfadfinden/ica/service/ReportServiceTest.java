@@ -2,7 +2,6 @@ package de.pfadfinden.ica.service;
 
 import de.pfadfinden.ica.IcaConnector;
 import de.pfadfinden.ica.IcaServer;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,9 +21,8 @@ public class ReportServiceTest {
         InputStream is = ClassLoader.getSystemResourceAsStream("unittest.properties");
         properties.load(is);
 
-        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(
+        this.icaConnector = new IcaConnector(IcaServer.BDP_QA,
                 properties.getProperty("icausername"), properties.getProperty("icapassword"));
-        this.icaConnector = new IcaConnector(IcaServer.BDP_QA, credentials);
         this.reportService = new ReportService(icaConnector);
     }
 

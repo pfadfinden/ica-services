@@ -5,7 +5,6 @@ import de.pfadfinden.ica.IcaServer;
 import de.pfadfinden.ica.model.IcaMitglied;
 import de.pfadfinden.ica.model.IcaMitgliedListElement;
 import de.pfadfinden.ica.model.IcaSearchedValues;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +14,8 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Properties;
 
-import static com.github.npathai.hamcrestopt.OptionalMatchers.*;
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isEmpty;
+import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -30,9 +30,8 @@ public class MitgliedServiceTest {
         InputStream is = ClassLoader.getSystemResourceAsStream("unittest.properties");
         properties.load(is);
 
-        UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(
-                properties.getProperty("icausername"), properties.getProperty("icapassword"));
-        this.icaConnector = new IcaConnector(IcaServer.BDP_QA, credentials);
+        this.icaConnector = new IcaConnector(IcaServer.BDP_QA, properties.getProperty("icausername"),
+                properties.getProperty("icapassword"));
         this.mitgliedService = new MitgliedService(icaConnector);
     }
 

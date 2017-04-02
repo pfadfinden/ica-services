@@ -27,7 +27,7 @@ public class MitgliedService {
     }
 
     public Optional<IcaMitglied> getMitgliedById(int id) throws IOException, URISyntaxException, IcaApiException {
-        logger.debug("Lookup IcaMitglied #{}",id);
+        logger.debug("Lookup IcaMitglied by id: #{}",id);
 
         IcaURIBuilder builder = icaConnector.getURIBuilder(IcaURIBuilder.URL_MITGLIED);
         builder.appendPath(Integer.toString(id));

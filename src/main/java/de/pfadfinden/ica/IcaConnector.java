@@ -14,7 +14,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -50,7 +49,7 @@ public class IcaConnector implements Closeable {
 
     private IcaServer icaServer;
 
-    public IcaConnector(IcaServer icaServer, UsernamePasswordCredentials credentials) throws
+    public IcaConnector(IcaServer icaServer, String username, String password) throws
             IcaAuthenticationException {
         gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateConverter())
@@ -64,7 +63,7 @@ public class IcaConnector implements Closeable {
                 .setRedirectStrategy(new LaxRedirectStrategy())
                 .build();
         try {
-            authenticate(credentials);
+            authenticate(username, password);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -72,7 +71,7 @@ public class IcaConnector implements Closeable {
         }
     }
 
-    private void authenticate(UsernamePasswordCredentials credentials) throws URISyntaxException, IOException,
+    private void authenticate(String username, String password) throws URISyntaxException, IOException,
             IcaAuthenticationException {
         if (isAuthenticated) return;
 
@@ -80,8 +79,8 @@ public class IcaConnector implements Closeable {
 
         HttpPost httpPost = new HttpPost(uri);
         List<NameValuePair> nvps = new ArrayList<>();
-        nvps.add(new BasicNameValuePair("username", credentials.getUserName()));
-        nvps.add(new BasicNameValuePair("password", credentials.getPassword()));
+        nvps.add(new BasicNameValuePair("username", username));
+        nvps.add(new BasicNameValuePair("password", password));
         nvps.add(new BasicNameValuePair("Login", "API"));
         nvps.add(new BasicNameValuePair("redirectTo", "./pages/loggedin.jsp"));
         httpPost.setEntity(new UrlEncodedFormEntity(nvps));
