@@ -10,8 +10,8 @@ import de.pfadfinden.ica.execption.IcaApiException;
 import de.pfadfinden.ica.execption.IcaAuthenticationException;
 import de.pfadfinden.ica.model.IcaApiResponse;
 import de.pfadfinden.ica.model.IcaResponse;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import de.pfadfinden.ica.service.GruppierungService;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -24,6 +24,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -43,7 +45,7 @@ public class IcaConnector implements Closeable {
     private CloseableHttpClient closeableHttpClient;
     private Gson gson;
 
-    private static Log log = LogFactory.getLog(IcaConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(GruppierungService.class);
 
     private boolean isAuthenticated = false;
 
@@ -97,9 +99,9 @@ public class IcaConnector implements Closeable {
 
             if (response.getStatusLine().getStatusCode() == 200) {
                 isAuthenticated = true;
-                log.debug("Security: Authenticated to ICA using API token: " + resp.getApiSessionToken());
+                logger.debug("Security: Authenticated to ICA using API token: " + resp.getApiSessionToken());
             } else {
-                log.warn("Security: Authentication on ICA failed.");
+                logger.warn("Security: Authentication on ICA failed.");
                 throw new IcaAuthenticationException("Authentication on ICA failed.");
             }
         }
@@ -111,7 +113,7 @@ public class IcaConnector implements Closeable {
         closeableHttpClient.execute(httpGet).close();
         isAuthenticated = false;
         closeableHttpClient.close();
-        log.debug("Security: Session terminated and client closed.");
+        logger.debug("Security: Session terminated and client closed.");
     }
 
     public <T> T executeApiRequest(HttpUriRequest request, Type resultType) throws IcaApiException {
@@ -119,6 +121,7 @@ public class IcaConnector implements Closeable {
                 CloseableHttpResponse response = closeableHttpClient.execute(request)
         ) {
             HttpEntity responseEntity = response.getEntity();
+
             Reader respReader = new InputStreamReader(responseEntity.getContent());
 
             Type typeWithResponse = IcaResponse.getType(resultType);
@@ -127,8 +130,15 @@ public class IcaConnector implements Closeable {
             IcaApiResponse<IcaResponse<T>> result = gson.fromJson(respReader, typeWithApiResponse);
 
             if (result == null || result.getStatusCode() != 0) {
+                logger.error("Ica API returns error: RequestURI {} RequestType {} API ResultStatusCode {} " +
+                                "API Reponse isSuccess {}",
+                        request.getURI(),
+                        request.getMethod(),
+                        result.getStatusCode()
+                );
                 throw new IcaApiException(result);
             }
+
             return result.getResponse().getData();
         } catch (Exception e) {
             throw new IcaApiException(e);

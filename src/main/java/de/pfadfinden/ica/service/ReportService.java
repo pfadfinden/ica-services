@@ -52,7 +52,12 @@ public class ReportService {
                 CloseableHttpResponse response = icaConnector.getCloseableHttpClient().execute(httpget)
         ) {
             HttpEntity entity = response.getEntity();
-            return EntityUtils.toByteArray(entity);
+            byte[] resultDoc = EntityUtils.toByteArray(entity);
+            if(resultDoc.length < 100){
+                logger.error("Ica returns report of {} bytes length. This seems to be too small.",resultDoc.length);
+                throw new IcaException();
+            }
+            return resultDoc;
         } catch (Exception e) {
             throw new IcaException(e);
         }

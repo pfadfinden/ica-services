@@ -2,6 +2,7 @@ package de.pfadfinden.ica.service;
 
 import de.pfadfinden.ica.IcaConnector;
 import de.pfadfinden.ica.IcaServer;
+import de.pfadfinden.ica.execption.IcaException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +36,22 @@ public class ReportServiceTest {
     public void getReport() throws Exception {
         HashMap<String, Object> reportParams = new HashMap<>();
         reportParams.put("A_Mitgliedsnummer", 11111);
+        reportParams.put("X_RequestId", "12345");
         reportService.getReport(105, 1, reportParams);
+    }
+
+    @Test(expected=IcaException.class)
+    public void getReportParamMissing() throws Exception {
+        HashMap<String, Object> reportParams = new HashMap<>();
+        reportParams.put("X_RequestId", "12345");
+        reportService.getReport(105, 1, reportParams);
+    }
+
+    @Test(expected=IcaException.class)
+    public void getReportOneWrongId() throws Exception {
+        HashMap<String, Object> reportParams = new HashMap<>();
+        reportParams.put("X_RequestId", "12345");
+        reportService.getReport(999, 1, reportParams);
     }
 
 }
