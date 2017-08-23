@@ -5,19 +5,16 @@ import de.pfadfinden.ica.IcaServer;
 import de.pfadfinden.ica.model.IcaMitglied;
 import de.pfadfinden.ica.model.IcaMitgliedListElement;
 import de.pfadfinden.ica.model.IcaSearchedValues;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Properties;
 
-import static com.github.npathai.hamcrestopt.OptionalMatchers.isEmpty;
-import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MitgliedServiceTest {
 
@@ -25,7 +22,7 @@ public class MitgliedServiceTest {
     private MitgliedService mitgliedService;
     private Properties properties = new Properties();
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         InputStream is = ClassLoader.getSystemResourceAsStream("unittest.properties");
         properties.load(is);
@@ -35,7 +32,7 @@ public class MitgliedServiceTest {
         this.mitgliedService = new MitgliedService(icaConnector);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         this.icaConnector.close();
     }
@@ -43,15 +40,15 @@ public class MitgliedServiceTest {
     @Test
     public void getMitgliedByIdEmptyResult() throws Exception {
         Optional<IcaMitglied> mitglied = mitgliedService.getMitgliedById(999);
-        assertThat(mitglied, isEmpty());
+        assertFalse(mitglied.isPresent());
     }
 
     @Test
     public void getMitgliedByIdOneResult() throws Exception {
         Optional<IcaMitglied> mitglied = mitgliedService.getMitgliedById(11111);
-        assertThat(mitglied, isPresent());
+        assertTrue(mitglied.isPresent());
         mitglied.ifPresent(
-                icaMitglied -> assertThat(icaMitglied.getNachname(), is("Uteiumetzgeö"))
+                icaMitglied -> assertEquals(icaMitglied.getNachname(), "Uteiumetzgeö")
         );
     }
 
@@ -60,8 +57,8 @@ public class MitgliedServiceTest {
         IcaSearchedValues searchedValues = new IcaSearchedValues();
         searchedValues.setMitgliedsNummber("999");
         ArrayList<IcaMitgliedListElement> mitglieder = mitgliedService.getMitgliedBySearch(searchedValues, 1, 0, 100);
-        assertThat(mitglieder, is(notNullValue()));
-        assertThat(mitglieder.size(), is(0));
+        assertNotNull(mitglieder);
+        assertEquals(0, mitglieder.size());
     }
 
     @Test
@@ -70,8 +67,8 @@ public class MitgliedServiceTest {
         searchedValues.setMitgliedsNummber("11111");
 
         ArrayList<IcaMitgliedListElement> mitglieder = mitgliedService.getMitgliedBySearch(searchedValues, 1, 0, 100);
-        assertThat(mitglieder.size(), is(1));
-        assertThat(mitglieder.get(0), instanceOf(IcaMitgliedListElement.class));
+        assertEquals(1, mitglieder.size());
+     //   assertThat(mitglieder.get(0), instanceOf(IcaMitgliedListElement.class));
     }
 
 }

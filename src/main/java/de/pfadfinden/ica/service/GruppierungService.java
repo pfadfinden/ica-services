@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class GruppierungService {
@@ -23,19 +24,9 @@ public class GruppierungService {
         this.icaConnector = icaConnector;
     }
 
-    public Collection<IcaGruppierung> getChildGruppierungen(int id) throws IOException, URISyntaxException,
-            IcaApiException {
-        logger.debug("Lookup childGruppierungen for #{}",id);
-
-        IcaURIBuilder builder = icaConnector.getURIBuilder(IcaURIBuilder.URL_GRP);
-        builder.addParameter("node", Integer.toString(id));
-
-        HttpGet httpGet = new HttpGet(builder.build());
-        Type type = new TypeToken<Collection<IcaGruppierung>>() {
-        }.getType();
-        return icaConnector.executeApiRequest(httpGet, type);
-    }
-
+    /**
+     * Liefert genau die Root Gruppierung des Benutzers.
+     */
     public IcaGruppierung getRootGruppierung() throws IOException, URISyntaxException, IcaApiException {
 
         IcaURIBuilder builder = icaConnector.getURIBuilder(IcaURIBuilder.URL_GRP);
@@ -50,6 +41,66 @@ public class GruppierungService {
         IcaGruppierung rootGruppierung = icaGruppierung.iterator().next();
         logger.debug("rootGruppierung #{} '{}'",rootGruppierung.getId(),rootGruppierung.getGruppierungsname());
         return rootGruppierung;
+    }
+
+    /**
+     * Liefert die unmittelbare untergeordneten Kind-Gruppierungen
+     * einer Gruppierung. Geht nicht rekursiv vor, keine Kindeskinder.
+     */
+    public Collection<IcaGruppierung> getChildGruppierungen(int id) throws IOException, URISyntaxException,
+            IcaApiException {
+        logger.debug("Calling getChildGruppierungen({})",id);
+
+        IcaURIBuilder builder = icaConnector.getURIBuilder(IcaURIBuilder.URL_GRP);
+        builder.addParameter("node", Integer.toString(id));
+
+        HttpGet httpGet = new HttpGet(builder.build());
+        Type type = new TypeToken<Collection<IcaGruppierung>>() {}.getType();
+        return icaConnector.executeApiRequest(httpGet, type);
+    }
+
+    /**
+     * Finde alle Gruppierungen. Methode geht
+     * ressourcenlastig durch ganzen Gruppierungsbaum.
+     */
+    public Collection<IcaGruppierung> getAllGruppierungen()
+            throws IOException, URISyntaxException, IcaApiException {
+
+        Collection<IcaGruppierung> gruppierungen = new ArrayList<>();
+
+        IcaGruppierung rootGruppierung = this.getRootGruppierung();
+        logger.info("Root Gruppierung: {}.",rootGruppierung.getDescriptor());
+        gruppierungen.add(rootGruppierung);
+        gruppierungen.addAll(this.getGruppierungen(rootGruppierung.getId()));
+        return gruppierungen;
+    }
+
+    /**
+     * Finde alle Gruppierungen. Methode geht
+     * ressourcenlastig durch ganzen Gruppierungsbaum.
+     */
+    public Collection<IcaGruppierung> getGruppierungen(int parentGruppierung)
+            throws IOException, URISyntaxException, IcaApiException {
+        logger.debug("Calling method getGruppierungen({}).",parentGruppierung);
+
+        Collection<IcaGruppierung> gruppierungen = new ArrayList<>();
+
+        Collection<IcaGruppierung> childGruppierungen = this.getChildGruppierungen(parentGruppierung);
+        for(IcaGruppierung childGruppierung : childGruppierungen){
+            logger.debug("ChildGruppierung #{} ({})",childGruppierung.getId(),childGruppierung.getDescriptor());
+
+            // Falls Gruppierung mit zzz beginnt, ist sie deaktiviert.
+            if(childGruppierung.getGruppierungsname().substring(0,3).equals("zzz")) continue;
+
+            gruppierungen.add(childGruppierung);
+
+            // Nur wenn Gruppierungsnummer auf 00 endet, tiefere Ebene in Baum vorhanden
+            String gruppierungsNummer = childGruppierung.getGruppierungsnummer();
+            if(gruppierungsNummer.substring(gruppierungsNummer.length() - 2).equals("00")){
+                gruppierungen.addAll(this.getGruppierungen(childGruppierung.getId()));
+            }
+        }
+        return gruppierungen;
     }
 
 }

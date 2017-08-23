@@ -10,18 +10,20 @@ import de.pfadfinden.ica.execption.IcaApiException;
 import de.pfadfinden.ica.execption.IcaAuthenticationException;
 import de.pfadfinden.ica.model.IcaApiResponse;
 import de.pfadfinden.ica.model.IcaResponse;
-
 import de.pfadfinden.ica.service.GruppierungService;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.LaxRedirectStrategy;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -73,6 +75,30 @@ public class IcaConnector implements Closeable {
         }
     }
 
+    public IcaConnector(IcaServer icaServer, String session) throws
+            IcaAuthenticationException {
+        gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDate.class, new LocalDateConverter())
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
+                .registerTypeAdapter(LocalTime.class, new LocalTimeConverter())
+                .create();
+
+        this.icaServer = icaServer;
+
+        BasicClientCookie cookie = new BasicClientCookie("JSESSIONID", session);
+        cookie.setDomain(icaServer.getHost());
+        cookie.setPath("/ica");
+        cookie.setSecure(true);
+
+        CookieStore cookieStore = new BasicCookieStore();
+        cookieStore.addCookie(cookie);
+
+        this.closeableHttpClient = HttpClients.custom()
+                .setRedirectStrategy(new LaxRedirectStrategy())
+                .setDefaultCookieStore(cookieStore)
+                .build();
+    }
+
     private void authenticate(String username, String password) throws URISyntaxException, IOException,
             IcaAuthenticationException {
         if (isAuthenticated) return;
@@ -121,7 +147,6 @@ public class IcaConnector implements Closeable {
                 CloseableHttpResponse response = closeableHttpClient.execute(request)
         ) {
             HttpEntity responseEntity = response.getEntity();
-
             Reader respReader = new InputStreamReader(responseEntity.getContent());
 
             Type typeWithResponse = IcaResponse.getType(resultType);
