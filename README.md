@@ -4,7 +4,8 @@
 | group                     | artifact         | version |
 | ------------------------- | ---------------- | ------- |
 | org.apache.httpcomponents | httpclient       | 4.5.3   |
-| com.google.code.gson      | gson             | 2.8.0   |
+| com.google.code.gson      | gson             | 2.8.1   |
+| com.google.guava          | guava            | 23.0    |
 | org.slf4j                 | slf4j-api        | 1.7.25  |
 | org.slf4j                 | jcl-over-slf4j   | 1.7.25  |
 
@@ -21,13 +22,12 @@ Die Library ist als Maven Projekt ausgelegt und sollte als Abhängigkeit hinzuge
 <dependencies>
 ```
 
-> Die Library steht aktuell noch nicht im JCentral zur Verfügung.
+> Die Library steht aktuell noch nicht im jCenter zur Verfügung.
 
 
 ## Dokumentation
 
 ### Verbindungsaufbau und Authentifizierung
-Sämtliche Serviceaufrufe benötigen einen IcaConnector. 
 Mit Instanzierung eines IcaConnectors wird eine HTTP Session aufgebaut und die Authentifizierung an der ICA API 
 vorgenommen. 
 
@@ -56,13 +56,28 @@ try(
     // Nutzung für ein oder mehrere Serviceaufrufe
 }
 ```
+#### Authorisierung anhand Session
+Sollte bereits über einen anderen Weg die Authentifizierung an der MV erfolgt sein, kann der API Aufruf auch direkt 
+mit einer SessionId erfolgen.
+
+```java
+IcaConnector icaConnector = new IcaConnector(IcaServer.BDP_QA,"XXX_SESSION_STRING_XXX");
+```
+
+### API Zugriffslimit
+Die Vereinbarung zur Nutzung der BdP MV API sieht eine Beschränkung der Anzahl von maschinellen Zugriffe je Sekunde 
+vor. Die Klasse `IcaConnector` sieht in den Zugriffsmethoden ein entsprechendes Ratelimitung vor. Bei Überschreitung 
+der zulässigen Zugriffe werden API Anfragen verzögert, um ein temporäre Sperrung der genutzten IP Adresse zu vermeiden.
 
 ### Logging
 Das Logging der Library und derer Abhängigkeiten erfolgt an SLF4J (Simple Logging Facade for Java). Der Nutzer dieser
 Library sollte deshalb ein SLF4J kompatibles Logging Framework (z.B. Logback) oder eine Bridge (slf4j->log4j, slf4j->jcl)
 einbinden.
 
-### MitgliedService
+### Serviceaufruf
+Sämtliche Serviceaufrufe benötigen eine Instanz des `IcaConnector` im Konstruktor. 
+
+#### MitgliedService
 Der einfachste Anwendungsfall des Mitgliedservice ist die Abfrage der Mitgliedsdaten zu einer eindeutigen 
 Mitgliedsnummer.
 ```java
@@ -89,10 +104,22 @@ mitglieder.ifPresent(
 
 ```
 
-### GruppierungService
+#### GruppierungService
+Die Organisationsstruktur des BdP und seiner Untergliederungen ist in einem hierarchischen Baum abgebildet. Jede 
+Untergliederung (z.B. Landesverband, Bezirk, Stamm) wird als Gruppierung mit einem Elter- und mehreren 
+Kind-Gruppierungen in diesem Baum gespeichert.
 
 
-### ReportService
+```java
+MitgliedService mitgliedService = new MitgliedService(icaConnector);
+Optional<IcaMitglied> mitglied = mitgliedService.getMitgliedById(11111);
+mitglied.ifPresent(
+        icaMitglied -> System.out.println(icaMitglied.getNachname())
+);
+```
+
+
+#### ReportService
 Über die Report Funktion der Mitgliederverwaltung könnnen Standardberichte wie z.B. Mitgliederlisten in den Formaten 
 PDF (Portable Document Format, z.B. Adobe Reader) und XLS (Microsoft Excel) generiert werden. 
 

@@ -1,5 +1,7 @@
 package de.pfadfinden.ica.model;
 
+import com.google.common.base.MoreObjects;
+
 import java.util.Collection;
 
 public class IcaGruppierung {
@@ -40,6 +42,13 @@ public class IcaGruppierung {
     public boolean isZzz(){
         if(this.getGruppierungsname().substring(0,3).equals("zzz")) return true;
         return false;
+    }
+
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("descriptor", descriptor)
+                .toString();
     }
 
 }

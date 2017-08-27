@@ -1,5 +1,6 @@
 package de.pfadfinden.ica.model;
 
+import com.google.common.base.MoreObjects;
 import com.google.gson.annotations.SerializedName;
 
 import java.time.LocalDate;
@@ -7,22 +8,6 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 
 public class IcaMitglied {
-
-    /**
-     * Beschreibt die Bankverbindung eines Mitglieds.
-     */
-    public static class KontoverbindungType {
-        private String id;
-        private String mitgliedsNummer;
-
-        private String kontoinhaber;
-        private String kontonummer;
-        private String bankleitzahl;
-        private String institut;
-
-        private String iban;
-        private String bic;
-    }
 
     private int id;
     private int mitgliedsNummer;
@@ -58,7 +43,7 @@ public class IcaMitglied {
 
     private IcaGeschlecht geschlecht;
 
-    private KontoverbindungType kontoverbindung;
+    private IcaKontoverbindung kontoverbindung;
 
     @SerializedName("eintrittsdatum")
     private LocalDate eintrittsDatum;
@@ -310,11 +295,21 @@ public class IcaMitglied {
         this.geschlecht = geschlecht;
     }
 
-    public KontoverbindungType getKontoverbindung() {
+    public IcaKontoverbindung getKontoverbindung() {
         return kontoverbindung;
     }
 
-    public void setKontoverbindung(KontoverbindungType kontoverbindung) {
+    public void setKontoverbindung(IcaKontoverbindung kontoverbindung) {
         this.kontoverbindung = kontoverbindung;
     }
+
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("mitgliedsNummer", mitgliedsNummer)
+                .add("vorname", vorname)
+                .add("nachname", nachname)
+                .toString();
+    }
+
 }

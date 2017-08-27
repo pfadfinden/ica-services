@@ -1,6 +1,8 @@
 package de.pfadfinden.ica.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public enum IcaMitgliedStatus {
-    AKTIV,
-    INAKTIV
+    @SerializedName("Aktiv") AKTIV,
+    @SerializedName("Inaktiv") INAKTIV
 }
