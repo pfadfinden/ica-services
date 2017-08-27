@@ -1,8 +1,10 @@
 package de.pfadfinden.ica.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public enum IcaEbene {
-    BUND,
-    LAND,
-    BEZIRK,
-    Stamm
+    @SerializedName("Bund") BUND,
+    @SerializedName("Land") LAND,
+    @SerializedName("Bezirk") BEZIRK,
+    @SerializedName("Stamm") STAMM
 }

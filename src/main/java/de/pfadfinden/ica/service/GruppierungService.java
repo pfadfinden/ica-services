@@ -5,6 +5,7 @@ import de.pfadfinden.ica.IcaConnector;
 import de.pfadfinden.ica.IcaURIBuilder;
 import de.pfadfinden.ica.execption.IcaApiException;
 import de.pfadfinden.ica.model.IcaGruppierung;
+import de.pfadfinden.ica.model.IcaGruppierungDetail;
 import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,12 +77,10 @@ public class GruppierungService {
     }
 
     /**
-     * Finde alle Gruppierungen. Methode geht
-     * ressourcenlastig durch ganzen Gruppierungsbaum.
+     * Finde alle Gruppierungen. Methode geht ressourcenlastig durch ganzen Gruppierungsbaum.
      */
     public Collection<IcaGruppierung> getGruppierungen(int parentGruppierung)
             throws IOException, URISyntaxException, IcaApiException {
-        logger.debug("Calling method getGruppierungen({}).",parentGruppierung);
 
         Collection<IcaGruppierung> gruppierungen = new ArrayList<>();
 
@@ -89,8 +88,8 @@ public class GruppierungService {
         for(IcaGruppierung childGruppierung : childGruppierungen){
             logger.debug("ChildGruppierung #{} ({})",childGruppierung.getId(),childGruppierung.getDescriptor());
 
-            // Falls Gruppierung mit zzz beginnt, ist sie deaktiviert.
-            if(childGruppierung.getGruppierungsname().substring(0,3).equals("zzz")) continue;
+            // Falls Gruppierung mit zzz beginnt, ist sie deaktiviert und wird ignoriert.
+            if(childGruppierung.isZzz()) continue;
 
             gruppierungen.add(childGruppierung);
 
@@ -101,6 +100,20 @@ public class GruppierungService {
             }
         }
         return gruppierungen;
+    }
+
+    /**
+     * Details zu einer Gruppierung.
+     */
+    public IcaGruppierungDetail getGruppierungDetail(int gruppierungId) throws IOException, URISyntaxException,
+            IcaApiException {
+
+        IcaURIBuilder builder = icaConnector.getURIBuilder(IcaURIBuilder.URL_GRP_DETAIL);
+        builder.appendPath("/"+gruppierungId);
+
+        HttpGet httpGet = new HttpGet(builder.build());
+        Type type = new TypeToken<IcaGruppierungDetail>() {}.getType();
+        return icaConnector.executeApiRequest(httpGet, type);
     }
 
 }

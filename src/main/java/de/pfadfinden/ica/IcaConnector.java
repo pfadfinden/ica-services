@@ -1,5 +1,7 @@
 package de.pfadfinden.ica;
 
+import com.google.common.base.Stopwatch;
+import com.google.common.util.concurrent.RateLimiter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -48,6 +50,7 @@ public class IcaConnector implements Closeable {
     private Gson gson;
 
     private final Logger logger = LoggerFactory.getLogger(GruppierungService.class);
+    private final RateLimiter apiRateLimiter = RateLimiter.create(3.0); // rate is "3 permits per second"
 
     private boolean isAuthenticated = false;
 
@@ -77,6 +80,9 @@ public class IcaConnector implements Closeable {
 
     public IcaConnector(IcaServer icaServer, String session) throws
             IcaAuthenticationException {
+
+        this.apiRateLimiter.acquire(); // may wait
+
         gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateConverter())
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeConverter())
@@ -102,6 +108,8 @@ public class IcaConnector implements Closeable {
     private void authenticate(String username, String password) throws URISyntaxException, IOException,
             IcaAuthenticationException {
         if (isAuthenticated) return;
+
+        this.apiRateLimiter.acquire(); // may wait
 
         URI uri = IcaURIBuilder.getLoginURIBuilder(this.icaServer).build();
 
@@ -143,6 +151,9 @@ public class IcaConnector implements Closeable {
     }
 
     public <T> T executeApiRequest(HttpUriRequest request, Type resultType) throws IcaApiException {
+
+        this.apiRateLimiter.acquire(); // may wait
+
         try (
                 CloseableHttpResponse response = closeableHttpClient.execute(request)
         ) {

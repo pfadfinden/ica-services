@@ -1,16 +1,12 @@
 package de.pfadfinden.ica.model;
 
 import java.util.Collection;
-import java.util.regex.Pattern;
 
 public class IcaGruppierung {
 
     private String descriptor;
     private int id;
     private Collection<IcaGruppierung> children;
-
-    private static final Pattern GRPNUM_PATTERN = Pattern.compile("[\\d]+");
-    private static final Pattern GRPNAME_PATTERN = Pattern.compile("[\\d]+");
 
     public String getDescriptor() {
         return descriptor;
@@ -34,6 +30,16 @@ public class IcaGruppierung {
 
     public String getGruppierungsname() {
         return descriptor.substring(0,descriptor.lastIndexOf(' '));
+    }
+
+    /**
+     * Deaktiverte Gruppierungen werden nach MV Konvetion mit Präfix zzz versehen.
+     *
+     * @return true, falls Gruppierung als zzz markiert ist, ansonsten false.
+     */
+    public boolean isZzz(){
+        if(this.getGruppierungsname().substring(0,3).equals("zzz")) return true;
+        return false;
     }
 
 }

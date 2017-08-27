@@ -69,6 +69,12 @@ public class IcaURIBuilder extends URIBuilder {
      */
     public static final String URL_UNTERGLIEDERUNGEN = "/orgadmin/untergliederung";
 
+    /**
+     * Gruppierungsdetails
+     */
+    public static final String URL_GRP_DETAIL = "/nami/gruppierungen-for-grpadmin/parentgruppierung/parentGruppierung/0";
+
+
     public IcaURIBuilder() {
         super();
         setScheme("https");
