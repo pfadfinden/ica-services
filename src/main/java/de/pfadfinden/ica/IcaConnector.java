@@ -1,6 +1,5 @@
 package de.pfadfinden.ica;
 
-import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.RateLimiter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -108,6 +107,9 @@ public class IcaConnector implements Closeable {
     private void authenticate(String username, String password) throws URISyntaxException, IOException,
             IcaAuthenticationException {
         if (isAuthenticated) return;
+
+        if(username == null || username.isEmpty()) throw new IcaAuthenticationException("username null or empty");
+        if(password == null || password.isEmpty()) throw new IcaAuthenticationException("password null or empty");
 
         this.apiRateLimiter.acquire(); // may wait
 

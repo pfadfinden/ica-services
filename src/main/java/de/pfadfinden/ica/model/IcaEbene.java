@@ -6,5 +6,6 @@ public enum IcaEbene {
     @SerializedName("Bund") BUND,
     @SerializedName("Land") LAND,
     @SerializedName("Bezirk") BEZIRK,
-    @SerializedName("Stamm") STAMM
+    @SerializedName("Stamm") STAMM,
+    @SerializedName("Aufbaugruppe") AUFBAUGRUPPE
 }

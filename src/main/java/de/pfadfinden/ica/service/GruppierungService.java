@@ -39,6 +39,8 @@ public class GruppierungService {
         Type type = new TypeToken<Collection<IcaGruppierung>>() {
         }.getType();
         Collection<IcaGruppierung> icaGruppierung = icaConnector.executeApiRequest(httpGet, type);
+        if(icaGruppierung == null || icaGruppierung.size() != 1)
+            throw new IcaApiException("Result for " + "rootGruppierung != 1");
         IcaGruppierung rootGruppierung = icaGruppierung.iterator().next();
         logger.debug("rootGruppierung #{} '{}'",rootGruppierung.getId(),rootGruppierung.getGruppierungsname());
         return rootGruppierung;
