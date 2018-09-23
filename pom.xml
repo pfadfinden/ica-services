@@ -6,8 +6,24 @@
 
     <groupId>de.pfadfinden</groupId>
     <artifactId>ica-services</artifactId>
-    <version>1.5-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <version>1.11-SNAPSHOT</version>
+
+    <name>BdP ICA Services</name>
+    <description>Java Library zur BdP Mitgliederverwaltung ICA.</description>
+    <url>https://github.com/pfadfinden/ica-services</url>
+
+    <organization>
+        <name>Bund der Pfadfinderinnen und Pfadfinder e.V.</name>
+        <url>http://www.pfadfinden.de</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <id>philippst</id>
+            <name>Philipp Steinmetzger</name>
+            <email>philipp.steinmetzger@pfadfinden.de</email>
+        </developer>
+    </developers>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,7 +38,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.3</version>
+            <version>4.5.6</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -33,7 +49,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.8.1</version>
+            <version>2.8.5</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -48,16 +64,16 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>23.0</version>
+            <version>26.0-jre</version>
         </dependency>
 
         <!-- SCOPE: TEST -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.0.0-RC3</version>
+            <version>5.3.1</version>
+            <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
@@ -65,5 +81,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 </project>
