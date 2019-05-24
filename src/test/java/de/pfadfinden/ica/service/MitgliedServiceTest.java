@@ -1,6 +1,6 @@
 package de.pfadfinden.ica.service;
 
-import de.pfadfinden.ica.IcaConnector;
+import de.pfadfinden.ica.IcaConnection;
 import de.pfadfinden.ica.IcaServer;
 import de.pfadfinden.ica.model.IcaMitglied;
 import de.pfadfinden.ica.model.IcaMitgliedListElement;
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class MitgliedServiceTest {
 
-    private IcaConnector icaConnector;
+    private IcaConnection icaConnector;
     private MitgliedService mitgliedService;
     private Properties properties = new Properties();
 
@@ -27,14 +27,14 @@ public class MitgliedServiceTest {
         InputStream is = ClassLoader.getSystemResourceAsStream("unittest.properties");
         properties.load(is);
 
-        this.icaConnector = new IcaConnector(IcaServer.BDP_QA, properties.getProperty("icausername"),
+        this.icaConnector = new IcaConnection(IcaServer.BDP_QA, properties.getProperty("icausername"),
                 properties.getProperty("icapassword"));
         this.mitgliedService = new MitgliedService(icaConnector);
     }
 
     @AfterEach
     public void tearDown() throws Exception {
-        this.icaConnector.close();
+//        this.icaConnector.close();
     }
 
     @Test

@@ -1,6 +1,6 @@
 package de.pfadfinden.ica.service;
 
-import de.pfadfinden.ica.IcaConnector;
+import de.pfadfinden.ica.IcaConnection;
 import de.pfadfinden.ica.IcaServer;
 import de.pfadfinden.ica.execption.IcaApiException;
 import de.pfadfinden.ica.model.IcaEbene;
@@ -23,25 +23,24 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GruppierungServiceTest {
 
-    private IcaConnector icaConnector;
     private GruppierungService gruppierungService;
     private Properties properties = new Properties();
 
-    private final Logger logger = LoggerFactory.getLogger(GruppierungService.class);
+    private final Logger logger = LoggerFactory.getLogger(GruppierungServiceTest.class);
 
     @BeforeEach
     public void setUp() throws Exception {
         InputStream is = ClassLoader.getSystemResourceAsStream("unittest.properties");
         properties.load(is);
 
-        this.icaConnector = new IcaConnector(IcaServer.BDP_QA, properties.getProperty("icausername"),
+        IcaConnection icaConnector = new IcaConnection(IcaServer.BDP_QA, properties.getProperty("icausername"),
                 properties.getProperty("icapassword"));
         this.gruppierungService = new GruppierungService(icaConnector);
     }
 
     @AfterEach
     public void tearDown() throws Exception {
-        this.icaConnector.close();
+//        this.icaConnector.close();
     }
 
     @Test

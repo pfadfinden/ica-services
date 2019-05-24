@@ -2,64 +2,81 @@ package de.pfadfinden.ica.service;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import de.pfadfinden.ica.IcaConnector;
-import de.pfadfinden.ica.IcaURIBuilder;
+import de.pfadfinden.ica.IcaConnection;
+import de.pfadfinden.ica.execption.IcaApiException;
 import de.pfadfinden.ica.execption.IcaException;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.util.EntityUtils;
+import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
-import java.net.URI;
 
 public class ReportService {
 
     static private final Gson gson = new Gson();
-    private IcaConnector icaConnector;
+    private IcaConnection icaConnection;
     private final Logger logger = LoggerFactory.getLogger(ReportService.class);
 
-    public ReportService(IcaConnector icaConnector) {
-        this.icaConnector = icaConnector;
+    private static final String URL_PDFREPORT = "nami/grp-reports/filtered-for-grpadmin/run-all";
+    private static final String URL_ONETIMTEDOWNLOAD = "OneTimeDownload/otd";
+    private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+
+    public ReportService(IcaConnection icaConnection) {
+        this.icaConnection = icaConnection;
     }
 
     public byte[] getReport(int reportId, int gruppierungId, Object reportParams) throws IcaException {
 
-        IcaURIBuilder builder = icaConnector.getURIBuilder(IcaURIBuilder.URL_PDFREPORT);
-        builder.addParameter("id", Integer.toString(reportId));
-        builder.addParameter("crtGruppierung", Integer.toString(gruppierungId));
+        // Request report first
+        this.requestReport(reportId,gruppierungId,reportParams);
 
-        StringEntity postEntity = new StringEntity(gson.toJson(reportParams), ContentType.APPLICATION_JSON);
-        HttpPost httpPost = new HttpPost(builder.build());
-        httpPost.setEntity(postEntity);
-        httpPost.addHeader("Accept", "application/json");
+        // Download requested report
+        return this.downloadReport();
+    }
 
-        logger.debug("Request ICA report generation URI: {}", httpPost.getURI());
+    private void requestReport(int reportId, int gruppierungId, Object reportParams) throws IcaApiException {
+
+        HttpUrl httpUrl = icaConnection.getUrlBuilder()
+                .addPathSegments(URL_PDFREPORT)
+                .addQueryParameter("id",Integer.toString(reportId))
+                .addQueryParameter("crtGruppierung",Integer.toString(gruppierungId))
+                .build();
+        logger.debug("Request ICA report generation URI: {}", httpUrl);
+
+        RequestBody body = RequestBody.create(JSON, gson.toJson(reportParams));
+
+        Request request = new Request.Builder()
+                .url(httpUrl)
+                .post(body)
+                .addHeader("Accept","application/json")
+                .build();
 
         Type type = new TypeToken<String>() {}.getType();
-        icaConnector.executeApiRequest(httpPost, type);
+        icaConnection.executeApiRequest(request, type);
+    }
 
-        URI downloadUri = icaConnector.getURIBuilder(IcaURIBuilder.URL_ONETIMTEDOWNLOAD, false).build();
-        logger.debug("Request ICA report download URI: {}", downloadUri);
+    private byte[] downloadReport() throws IcaApiException {
 
-        HttpGet httpget = new HttpGet(downloadUri);
-        try (
-                CloseableHttpResponse response = icaConnector.getCloseableHttpClient().execute(httpget)
-        ) {
-            HttpEntity entity = response.getEntity();
-            byte[] resultDoc = EntityUtils.toByteArray(entity);
-            if(resultDoc.length < 100){
-                logger.error("Ica returns report of {} bytes length. This seems to be too small.",resultDoc.length);
+        HttpUrl downloadUrl = icaConnection.getUrlBuilder(false)
+                .addPathSegments(URL_ONETIMTEDOWNLOAD)
+                .build();
+        logger.debug("Request ICA report download URI: {}", downloadUrl);
+
+        Request request = new Request.Builder()
+                .url(downloadUrl)
+                .build();
+
+        try (Response response = icaConnection.getCloseableHttpClient().newCall(request).execute()) {
+            if(response.body() == null) throw new IcaException();
+            byte[] resultDoc = response.body().bytes();
+            if (resultDoc.length < 100) {
+                logger.error("Ica returns report of {} bytes length. This seems to be too small.", resultDoc.length);
                 throw new IcaException();
             }
             return resultDoc;
-        } catch (Exception e) {
-            throw new IcaException(e);
+        } catch (IOException | IcaException e) {
+            throw new IcaApiException(e);
         }
     }
 }

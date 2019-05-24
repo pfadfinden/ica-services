@@ -1,23 +1,22 @@
 
 ## Dependencies
 
-| group                     | artifact         | version |
-| ------------------------- | ---------------- | ------- |
-| org.apache.httpcomponents | httpclient       | 4.5.3   |
-| com.google.code.gson      | gson             | 2.8.1   |
-| com.google.guava          | guava            | 23.0    |
-| org.slf4j                 | slf4j-api        | 1.7.25  |
-| org.slf4j                 | jcl-over-slf4j   | 1.7.25  |
+| group                     | artifact         | version  |
+| ------------------------- | ---------------- | -------- |
+| com.squareup.okhttp3      | okhttp           | 3.12.3   |
+| com.google.code.gson      | gson             | 2.8.5    |
+| com.google.guava          | guava            | 27.1-jre |
+| org.slf4j                 | jcl-over-slf4j   | 1.7.26   |
 
 ## Installation
 
-Die Library ist als Maven Projekt ausgelegt und sollte als Abhängigkeit hinzugefügt werden.
+Die Library ist als Maven POM Projekt ausgelegt und kann als Abhängigkeit hinzugefügt werden.
 ```xml
 <dependencies>
     <dependency>
         <groupId>de.pfadfinden</groupId>
         <artifactId>ica-services</artifactId>
-        <version>1.3-SNAPSHOT</version>
+        <version>2.0.0</version>
     </dependency>
 <dependencies>
 ```
@@ -28,22 +27,20 @@ Die Library ist als Maven Projekt ausgelegt und sollte als Abhängigkeit hinzuge
 ## Dokumentation
 
 ### Verbindungsaufbau und Authentifizierung
-Mit Instanzierung eines IcaConnectors wird eine HTTP Session aufgebaut und die Authentifizierung an der ICA API 
-vorgenommen. 
-
-Eine Instanz des IcaConnectors kann für ein oder mehrere Serviceaufrufe verwendet werden. Dadurch entfällt der Overhead 
-für erneuten Aufbau der Session. Bei längerer Nicht-Benutzung kann die Session jedoch auslaufen.
+Mit Instanzierung einer `IcaConnection` wird eine HTTP Session aufgebaut und die Authentifizierung an der ICA API 
+vorgenommen. Eine Instanz kann für ein oder mehrere Serviceaufrufe verwendet werden. Dadurch entfällt der Overhead 
+für erneute Authentifizierung und Aufbau der Session. Bei längerer Nicht-Benutzung kann die Session jedoch verfallen.
 
 ```java
-IcaConnector icaConnector = new IcaConnector(IcaServer.BDP_QA,"username","password");
+IcaConnection icaConnection = new IcaConnection(IcaServer.BDP_QA,"username","password");
 ```
 
-Um die API Session sicher zu beenden und die Ressourcen des HTTP Clients freizugeben, muss der IcaConnector nach
+Um die API Session sicher zu beenden und die Ressourcen des HTTP Clients freizugeben, sollte die IcaConnection nach
 Verwendung geschlossen werden.
 
 ```java
 // Nutzung für ein oder mehrere Serviceaufrufe
-icaConnector.close();
+icaConnection.close();
 ```
 
 Da `java.io.Closeable` implementiert wird, kann alternativ zum manuellen `close` auch das try-with-resources 
@@ -51,7 +48,7 @@ Statement verwendet werden.
 
 ```java
 try(
-    IcaConnector icaConnector = new IcaConnector(icaServer,icaCredentials);
+    IcaConnection icaConnection = new IcaConnection(icaServer,icaCredentials);
 ){
     // Nutzung für ein oder mehrere Serviceaufrufe
 }
@@ -61,12 +58,12 @@ Sollte bereits über einen anderen Weg die Authentifizierung an der MV erfolgt s
 mit einer SessionId erfolgen.
 
 ```java
-IcaConnector icaConnector = new IcaConnector(IcaServer.BDP_QA,"XXX_SESSION_STRING_XXX");
+IcaConnection icaConnection = new IcaConnection(IcaServer.BDP_QA,"XXX_SESSION_STRING_XXX");
 ```
 
 ### API Zugriffslimit
 Die Vereinbarung zur Nutzung der BdP MV API sieht eine Beschränkung der Anzahl von maschinellen Zugriffe je Sekunde 
-vor. Die Klasse `IcaConnector` sieht in den Zugriffsmethoden ein entsprechendes Ratelimitung vor. Bei Überschreitung 
+vor. Die Klasse `IcaConnection` sieht in den Zugriffsmethoden ein entsprechendes Ratelimitung vor. Bei Überschreitung 
 der zulässigen Zugriffe werden API Anfragen verzögert, um ein temporäre Sperrung der genutzten IP Adresse zu vermeiden.
 
 ### Logging
@@ -75,7 +72,7 @@ Library sollte deshalb ein SLF4J kompatibles Logging Framework (z.B. Logback) od
 einbinden.
 
 ### Serviceaufruf
-Sämtliche Serviceaufrufe benötigen eine Instanz des `IcaConnector` im Konstruktor. 
+Sämtliche Serviceaufrufe benötigen eine Instanz des `IcaConnection` im Konstruktor. 
 
 #### MitgliedService
 Der einfachste Anwendungsfall des Mitgliedservice ist die Abfrage der Mitgliedsdaten zu einer eindeutigen 
@@ -111,11 +108,7 @@ Kind-Gruppierungen in diesem Baum gespeichert.
 
 
 ```java
-MitgliedService mitgliedService = new MitgliedService(icaConnector);
-Optional<IcaMitglied> mitglied = mitgliedService.getMitgliedById(11111);
-mitglied.ifPresent(
-        icaMitglied -> System.out.println(icaMitglied.getNachname())
-);
+
 ```
 
 
