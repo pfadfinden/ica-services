@@ -2,7 +2,11 @@ package de.pfadfinden.ica.model;
 
 import java.util.List;
 
-@SuppressWarnings("unused")
+/**
+ * Suchparameter für Suche nach Mitgliedern.
+ *
+ * @see <a href="https://meinbdp.de/x/5IQtB">MeinBdP: Suche verwenden</a>
+ */
 public class IcaSearchedValues {
 
     private String vorname = "";
@@ -12,7 +16,7 @@ public class IcaSearchedValues {
     private String mglWohnort = "";
     private String alterVon = "";
     private String alterBis = "";
-    private IcaMitgliedStatus mglStatusId = null;
+    private IcaSearchedValuesStatus mglStatusId = null;
     private String funktion = "";
     private List<Integer> mglTypeId = null;
     private String organisation = "";
@@ -38,6 +42,43 @@ public class IcaSearchedValues {
     private String privacy = "";
     private String searchType = "MITGLIEDER";
 
+    public IcaSearchedValues() {
+    }
+
+    private IcaSearchedValues(Builder builder) {
+        setVorname(builder.vorname);
+        setNachname(builder.nachname);
+        setSpitzname(builder.spitzname);
+        setMitgliedsNummber(builder.mitgliedsNummber);
+        setMglWohnort(builder.mglWohnort);
+        setAlterVon(builder.alterVon);
+        setAlterBis(builder.alterBis);
+        setMglStatusId(builder.mglStatusId);
+        setFunktion(builder.funktion);
+        setMglTypeId(builder.mglTypeId);
+        setOrganisation(builder.organisation);
+        setTagId(builder.tagId);
+        setBausteinIncludedId(builder.bausteinIncludedId);
+        setZeitschriftenversand(builder.zeitschriftenversand);
+        setSearchName(builder.searchName);
+        setTaetigkeitId(builder.taetigkeitId);
+        setUntergliederungId(builder.untergliederungId);
+        setMitAllenTaetigkeiten(builder.mitAllenTaetigkeiten);
+        setWithEndedTaetigkeiten(builder.withEndedTaetigkeiten);
+        setEbeneId(builder.ebeneId);
+        setGrpNummer(builder.grpNummer);
+        setGrpName(builder.grpName);
+        setGruppierung1Id(builder.gruppierung1Id);
+        setGruppierung2Id(builder.gruppierung2Id);
+        setGruppierung3Id(builder.gruppierung3Id);
+        setGruppierung4Id(builder.gruppierung4Id);
+        setGruppierung5Id(builder.gruppierung5Id);
+        setGruppierung6Id(builder.gruppierung6Id);
+        setInGrp(builder.inGrp);
+        setUnterhalbGrp(builder.unterhalbGrp);
+        setPrivacy(builder.privacy);
+        setSearchType(builder.searchType);
+    }
 
     public String getVorname() {
         return vorname;
@@ -95,11 +136,11 @@ public class IcaSearchedValues {
         this.alterBis = alterBis;
     }
 
-    public IcaMitgliedStatus getMglStatusId() {
+    public IcaSearchedValuesStatus getMglStatusId() {
         return mglStatusId;
     }
 
-    public void setMglStatusId(IcaMitgliedStatus mglStatusId) {
+    public void setMglStatusId(IcaSearchedValuesStatus mglStatusId) {
         this.mglStatusId = mglStatusId;
     }
 
@@ -293,5 +334,245 @@ public class IcaSearchedValues {
 
     public void setSearchType(String searchType) {
         this.searchType = searchType;
+    }
+
+    public static final class Builder {
+        private String vorname;
+        private String nachname;
+        private String spitzname;
+        private String mitgliedsNummber;
+        private String mglWohnort;
+        private String alterVon;
+        private String alterBis;
+        private IcaSearchedValuesStatus mglStatusId;
+        private String funktion;
+        private List<Integer> mglTypeId;
+        private String organisation;
+        private Integer tagId;
+        private Integer bausteinIncludedId;
+        private boolean zeitschriftenversand;
+        private String searchName;
+        private List<Integer> taetigkeitId;
+        private Integer untergliederungId;
+        private boolean mitAllenTaetigkeiten;
+        private boolean withEndedTaetigkeiten;
+        private Integer ebeneId;
+        private String grpNummer;
+        private String grpName;
+        private String gruppierung1Id;
+        private String gruppierung2Id;
+        private String gruppierung3Id;
+        private String gruppierung4Id;
+        private String gruppierung5Id;
+        private String gruppierung6Id;
+        private boolean inGrp;
+        private boolean unterhalbGrp;
+        private String privacy;
+        private String searchType;
+
+        public Builder() {
+        }
+
+        public Builder withVorname(String val) {
+            vorname = val;
+            return this;
+        }
+
+        public Builder withNachname(String val) {
+            nachname = val;
+            return this;
+        }
+
+        public Builder withSpitzname(String val) {
+            spitzname = val;
+            return this;
+        }
+
+        public Builder withMitgliedsNummber(String val) {
+            mitgliedsNummber = val;
+            return this;
+        }
+
+        public Builder withMglWohnort(String val) {
+            mglWohnort = val;
+            return this;
+        }
+
+        public Builder withAlterVon(String val) {
+            alterVon = val;
+            return this;
+        }
+
+        public Builder withAlterBis(String val) {
+            alterBis = val;
+            return this;
+        }
+
+        public Builder withMglStatusId(IcaSearchedValuesStatus val) {
+            mglStatusId = val;
+            return this;
+        }
+
+        public Builder withFunktion(String val) {
+            funktion = val;
+            return this;
+        }
+
+        public Builder withMglTypeId(List<Integer> val) {
+            mglTypeId = val;
+            return this;
+        }
+
+        public Builder withOrganisation(String val) {
+            organisation = val;
+            return this;
+        }
+
+        public Builder withTagId(Integer val) {
+            tagId = val;
+            return this;
+        }
+
+        public Builder withBausteinIncludedId(Integer val) {
+            bausteinIncludedId = val;
+            return this;
+        }
+
+        public Builder withZeitschriftenversand(boolean val) {
+            zeitschriftenversand = val;
+            return this;
+        }
+
+        public Builder withSearchName(String val) {
+            searchName = val;
+            return this;
+        }
+
+        public Builder withTaetigkeitId(List<Integer> val) {
+            taetigkeitId = val;
+            return this;
+        }
+
+        public Builder withUntergliederungId(Integer val) {
+            untergliederungId = val;
+            return this;
+        }
+
+        public Builder withMitAllenTaetigkeiten(boolean val) {
+            mitAllenTaetigkeiten = val;
+            return this;
+        }
+
+        public Builder withWithEndedTaetigkeiten(boolean val) {
+            withEndedTaetigkeiten = val;
+            return this;
+        }
+
+        public Builder withEbeneId(Integer val) {
+            ebeneId = val;
+            return this;
+        }
+
+        public Builder withGrpNummer(String val) {
+            grpNummer = val;
+            return this;
+        }
+
+        public Builder withGrpName(String val) {
+            grpName = val;
+            return this;
+        }
+
+        public Builder withGruppierung1Id(String val) {
+            gruppierung1Id = val;
+            return this;
+        }
+
+        public Builder withGruppierung2Id(String val) {
+            gruppierung2Id = val;
+            return this;
+        }
+
+        public Builder withGruppierung3Id(String val) {
+            gruppierung3Id = val;
+            return this;
+        }
+
+        public Builder withGruppierung4Id(String val) {
+            gruppierung4Id = val;
+            return this;
+        }
+
+        public Builder withGruppierung5Id(String val) {
+            gruppierung5Id = val;
+            return this;
+        }
+
+        public Builder withGruppierung6Id(String val) {
+            gruppierung6Id = val;
+            return this;
+        }
+
+        public Builder withInGrp(boolean val) {
+            inGrp = val;
+            return this;
+        }
+
+        public Builder withUnterhalbGrp(boolean val) {
+            unterhalbGrp = val;
+            return this;
+        }
+
+        public Builder withPrivacy(String val) {
+            privacy = val;
+            return this;
+        }
+
+        public Builder withSearchType(String val) {
+            searchType = val;
+            return this;
+        }
+
+        public IcaSearchedValues build() {
+            return new IcaSearchedValues(this);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "IcaSearchedValues{" +
+                "vorname='" + vorname + '\'' +
+                ", nachname='" + nachname + '\'' +
+                ", spitzname='" + spitzname + '\'' +
+                ", mitgliedsNummber='" + mitgliedsNummber + '\'' +
+                ", mglWohnort='" + mglWohnort + '\'' +
+                ", alterVon='" + alterVon + '\'' +
+                ", alterBis='" + alterBis + '\'' +
+                ", mglStatusId=" + mglStatusId +
+                ", funktion='" + funktion + '\'' +
+                ", mglTypeId=" + mglTypeId +
+                ", organisation='" + organisation + '\'' +
+                ", tagId=" + tagId +
+                ", bausteinIncludedId=" + bausteinIncludedId +
+                ", zeitschriftenversand=" + zeitschriftenversand +
+                ", searchName='" + searchName + '\'' +
+                ", taetigkeitId=" + taetigkeitId +
+                ", untergliederungId=" + untergliederungId +
+                ", mitAllenTaetigkeiten=" + mitAllenTaetigkeiten +
+                ", withEndedTaetigkeiten=" + withEndedTaetigkeiten +
+                ", ebeneId=" + ebeneId +
+                ", grpNummer='" + grpNummer + '\'' +
+                ", grpName='" + grpName + '\'' +
+                ", gruppierung1Id='" + gruppierung1Id + '\'' +
+                ", gruppierung2Id='" + gruppierung2Id + '\'' +
+                ", gruppierung3Id='" + gruppierung3Id + '\'' +
+                ", gruppierung4Id='" + gruppierung4Id + '\'' +
+                ", gruppierung5Id='" + gruppierung5Id + '\'' +
+                ", gruppierung6Id='" + gruppierung6Id + '\'' +
+                ", inGrp=" + inGrp +
+                ", unterhalbGrp=" + unterhalbGrp +
+                ", privacy='" + privacy + '\'' +
+                ", searchType='" + searchType + '\'' +
+                '}';
     }
 }

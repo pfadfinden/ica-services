@@ -9,12 +9,15 @@ import okhttp3.HttpUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
 
+/**
+ * Services zu Gruppierungen, wie z.B. Landesverbaende, Bezirke und Staemme
+ */
 public class GruppierungService {
 
     private IcaConnection icaConnection;
@@ -25,11 +28,15 @@ public class GruppierungService {
             "/parentGruppierung/0";
 
     public GruppierungService(IcaConnection icaConnection) {
+        Objects.requireNonNull(icaConnection);
         this.icaConnection = icaConnection;
     }
 
     /**
-     * Liefert genau die Root Gruppierung des Benutzers.
+     * Finde die Basisgruppierung des authentifizierten Benutzers.
+     *
+     * @return Root {@link IcaGruppierung} des authentifzierten Benutzers
+     * @throws IcaApiException bei Kommunikationsfehler mit API
      */
     public IcaGruppierung getRootGruppierung() throws IcaApiException {
 
@@ -49,15 +56,19 @@ public class GruppierungService {
     }
 
     /**
-     * Liefert die unmittelbare untergeordneten Kind-Gruppierungen
-     * einer Gruppierung. Geht nicht rekursiv vor, keine Kindeskinder.
+     * Finde unmittelbar untergeordneten Kind-Gruppierungen zu einer Gruppierung.
+     * Methode geht nicht rekursiv vor, nutze {@link #getGruppierungen(int)} um auch Kindeskinder zu finden.
+     *
+     * @param  gruppierungId ID der Gruppierung
+     * @return Liste von {@link IcaGruppierung} zu Gruppierung
+     * @throws IcaApiException bei Kommunikationsfehler mit API
      */
-    public Collection<IcaGruppierung> getChildGruppierungen(int id) throws IcaApiException {
-        logger.debug("Calling getChildGruppierungen({})",id);
+    public Collection<IcaGruppierung> getChildGruppierungen(int gruppierungId) throws IcaApiException {
+        logger.debug("Calling getChildGruppierungen({})",gruppierungId);
 
         HttpUrl httpUrl = icaConnection.getUrlBuilder()
                 .addPathSegments(URL_GRP)
-                .addQueryParameter("node",Integer.toString(id))
+                .addQueryParameter("node",Integer.toString(gruppierungId))
                 .build();
 
         Type type = new TypeToken<Collection<IcaGruppierung>>() {}.getType();
@@ -65,11 +76,12 @@ public class GruppierungService {
     }
 
     /**
-     * Finde alle Gruppierungen. Methode geht
-     * ressourcenlastig durch ganzen Gruppierungsbaum.
+     * Finde alle Gruppierungen. Methode geht ressourcenlastig durch ganzen Gruppierungsbaum.
+     *
+     * @return alle {@link IcaGruppierung}
+     * @throws IcaApiException bei Kommunikationsfehler mit API
      */
-    public Collection<IcaGruppierung> getAllGruppierungen()
-            throws IOException, URISyntaxException, IcaApiException {
+    public Collection<IcaGruppierung> getAllGruppierungen() throws IcaApiException {
 
         Collection<IcaGruppierung> gruppierungen = new ArrayList<>();
 
@@ -81,14 +93,18 @@ public class GruppierungService {
     }
 
     /**
-     * Finde alle Gruppierungen. Methode geht ressourcenlastig durch ganzen Gruppierungsbaum.
+     * Finde alle untergeorndete Gruppierungen einschließlich Kindeskinder.
+     * Um nur unmittelbare Kindgruppierungen zu finden, nutze {@link #getChildGruppierungen(int)}.
+     *
+     * @param  gruppierungId ID der Gruppierung
+     * @return {@link IcaGruppierung} einschließlich Kindeskinder zu Gruppierung
+     * @throws IcaApiException bei Kommunikationsfehler mit API
      */
-    public Collection<IcaGruppierung> getGruppierungen(int parentGruppierung)
-            throws IOException, URISyntaxException, IcaApiException {
+    public Collection<IcaGruppierung> getGruppierungen(int gruppierungId) throws IcaApiException {
 
         Collection<IcaGruppierung> gruppierungen = new ArrayList<>();
 
-        Collection<IcaGruppierung> childGruppierungen = this.getChildGruppierungen(parentGruppierung);
+        Collection<IcaGruppierung> childGruppierungen = this.getChildGruppierungen(gruppierungId);
         for(IcaGruppierung childGruppierung : childGruppierungen){
             logger.debug("ChildGruppierung #{} ({})",childGruppierung.getId(),childGruppierung.getDescriptor());
 
@@ -108,9 +124,12 @@ public class GruppierungService {
 
     /**
      * Details zu einer Gruppierung.
+     *
+     * @param  gruppierungId ID der Gruppierung
+     * @return Optional Details zu einer Gruppierung als {@link IcaGruppierung}
+     * @throws IcaApiException bei Kommunikationsfehler mit API
      */
-    public IcaGruppierungDetail getGruppierungDetail(int gruppierungId) throws IOException, URISyntaxException,
-            IcaApiException {
+    public Optional<IcaGruppierungDetail> getGruppierungDetail(int gruppierungId) throws IcaApiException {
 
         HttpUrl httpUrl = icaConnection.getUrlBuilder()
                 .addPathSegments(URL_GRP_DETAIL)
@@ -118,7 +137,11 @@ public class GruppierungService {
                 .build();
 
         Type type = new TypeToken<IcaGruppierungDetail>() {}.getType();
-        return icaConnection.executeApiRequest(httpUrl, type);
+        Optional<IcaGruppierungDetail> icaGruppierungDetail = Optional.ofNullable(
+                icaConnection.executeApiRequest(httpUrl, type)
+        );
+        logger.debug("Return IcaGruppierungDetail {}",icaGruppierungDetail);
+        return icaGruppierungDetail;
     }
 
 }

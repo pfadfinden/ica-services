@@ -6,7 +6,7 @@
 
     <groupId>de.pfadfinden</groupId>
     <artifactId>ica-services</artifactId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
 
     <name>ica-services</name>
     <description>Java Library zur BdP Mitgliederverwaltung ICA.</description>
@@ -82,4 +82,43 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray-pfadfinden-maven</id>
+            <name>pfadfinden-maven</name>
+            <url>https://api.bintray.com/maven/pfadfinden/maven/ica-services/;publish=1</url>
+        </repository>
+    </distributionManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

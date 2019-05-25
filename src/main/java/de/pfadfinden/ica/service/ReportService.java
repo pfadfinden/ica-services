@@ -11,7 +11,15 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Objects;
 
+/**
+ * Services zur Ausfuehrung von Standardreports der Mitgliederverwaltung
+ * in den Zielformaten PDF und XLS.
+ *
+ * @see <a href="https://meinbdp.de/x/HgfoAw">MeinBdP: Auswertungen/Reports ausführen</a>
+ * @see <a href="https://meinbdp.de/x/IAfoAw">MeinBdP: Verfügbare Reports</a>
+ */
 public class ReportService {
 
     static private final Gson gson = new Gson();
@@ -23,9 +31,19 @@ public class ReportService {
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
     public ReportService(IcaConnection icaConnection) {
+        Objects.requireNonNull(icaConnection);
         this.icaConnection = icaConnection;
     }
 
+    /**
+     * Fuehre Report aus und erhalte XLS oder PDF Dokument als Byte-Array.
+     *
+     * @param  gruppierungId ID der Gruppierung zu der Report ausgefuehrt wird
+     * @param  reportId ID des Reports der ausgefuehrt werden soll
+     * @param  reportParams Beliebiges Objekt das serialisiert und als Reportparameter ubergeben werden soll
+     * @return Root Gruppierung des authentifzierten Benutzers
+     * @throws IcaApiException bei Kommunikationsfehler mit API
+     */
     public byte[] getReport(int reportId, int gruppierungId, Object reportParams) throws IcaException {
 
         // Request report first

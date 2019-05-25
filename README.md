@@ -1,12 +1,6 @@
+# Pfadfinden ICA Services
 
-## Dependencies
-
-| group                     | artifact         | version  |
-| ------------------------- | ---------------- | -------- |
-| com.squareup.okhttp3      | okhttp           | 3.12.3   |
-| com.google.code.gson      | gson             | 2.8.5    |
-| com.google.guava          | guava            | 27.1-jre |
-| org.slf4j                 | jcl-over-slf4j   | 1.7.26   |
+Java Bibliothek für den einfachen Zugriff auf die Mitgliederverwaltung des Bund der Pfadfinderinnen und Pfadfinder e.V..
 
 ## Installation
 
@@ -22,6 +16,17 @@ Die Library ist als Maven POM Projekt ausgelegt und kann als Abhängigkeit hinzu
 ```
 
 > Die Library steht aktuell noch nicht im jCenter zur Verfügung.
+
+## Abhängigkeiten
+
+Diese Anwendung nutzt folgende Bibliotheken von Drittanbietern.
+
+| group                     | artifact         | version  |
+| ------------------------- | ---------------- | -------- |
+| com.squareup.okhttp3      | okhttp           | 3.12.3   |
+| com.google.code.gson      | gson             | 2.8.5    |
+| com.google.guava          | guava            | 27.1-jre |
+| org.slf4j                 | jcl-over-slf4j   | 1.7.26   |
 
 
 ## Dokumentation

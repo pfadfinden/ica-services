@@ -10,12 +10,14 @@ import okhttp3.HttpUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * Services zu Mitgliedern
+ */
 public class MitgliedService {
 
     private IcaConnection icaConnection;
@@ -36,10 +38,18 @@ public class MitgliedService {
     private static final String URL_SEARCH = "nami/search-multi/result-list";
 
     public MitgliedService(IcaConnection icaConnection) {
+        Objects.requireNonNull(icaConnection);
         this.icaConnection = icaConnection;
     }
 
-    public Optional<IcaMitglied> getMitgliedById(int id) throws IOException, URISyntaxException, IcaApiException {
+    /**
+     * Finde ein Mitglied.
+     *
+     * @param id ID des Mitglieds
+     * @return Optional von einem {@link IcaMitglied}
+     * @throws IcaApiException bei Kommunikationsfehler mit API
+     */
+    public Optional<IcaMitglied> getMitgliedById(int id) throws IcaApiException {
         logger.debug("Lookup IcaMitglied by id: #{}",id);
 
         HttpUrl httpUrl = icaConnection.getUrlBuilder()
@@ -53,9 +63,26 @@ public class MitgliedService {
         return Optional.ofNullable(icaMitglied);
     }
 
+    /**
+     * Finde alle Mitglieder die den Suchparametern entsprechen.
+     * Die Funktion entspricht der Oberflaeche <a href="https://meinbdp.de/x/5IQtB">Suche verwenden</a>.
+     *
+     * @param  icaSearchedValues Mitglieder Suchparameter {@link IcaSearchedValues}
+     * @param  limit Maximale Ergebnisanzahl
+     * @param  page Anzahl von Ergebnissen je Seite
+     * @param  start Erstes Ergebnis in Aufruf
+     * @return Liste von {@link IcaMitgliedListElement}
+     * @throws IcaApiException bei Kommunikationsfehler mit API
+     * @see <a href="https://meinbdp.de/x/5IQtB">MeinBdP: Suche verwenden</a>
+     */
     public ArrayList<IcaMitgliedListElement> getMitgliedBySearch(IcaSearchedValues icaSearchedValues,
                                                                  Integer page, Integer start, Integer limit) throws IcaApiException {
         logger.debug("Lookup IcaMitglied by searchedValues: {}",icaSearchedValues);
+
+        Objects.requireNonNull(icaSearchedValues);
+        Objects.requireNonNull(page);
+        Objects.requireNonNull(start);
+        Objects.requireNonNull(limit);
 
         HttpUrl httpUrl = icaConnection.getUrlBuilder()
                 .addPathSegments(URL_SEARCH)

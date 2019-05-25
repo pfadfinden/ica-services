@@ -2,9 +2,7 @@ package de.pfadfinden.ica.service;
 
 import de.pfadfinden.ica.IcaConnection;
 import de.pfadfinden.ica.IcaServer;
-import de.pfadfinden.ica.model.IcaMitglied;
-import de.pfadfinden.ica.model.IcaMitgliedListElement;
-import de.pfadfinden.ica.model.IcaSearchedValues;
+import de.pfadfinden.ica.model.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,7 +46,10 @@ public class MitgliedServiceTest {
         Optional<IcaMitglied> mitglied = mitgliedService.getMitgliedById(11111);
         assertTrue(mitglied.isPresent());
         mitglied.ifPresent(
-                icaMitglied -> assertEquals(icaMitglied.getNachname(), "Uteiumetzgeö")
+                icaMitglied -> {
+                    assertEquals("Uteiumetzgeö", icaMitglied.getNachname());
+                    assertEquals(IcaMitgliedStatus.AKTIV, icaMitglied.getStatus());
+                }
         );
     }
 
@@ -62,12 +63,22 @@ public class MitgliedServiceTest {
     }
 
     @Test
+    public void getMitgliedBySearchBuilderEmptyResult() throws Exception {
+        IcaSearchedValues.Builder builder = new IcaSearchedValues.Builder().withMitgliedsNummber("999");
+        ArrayList<IcaMitgliedListElement> mitglieder = mitgliedService.getMitgliedBySearch(builder.build(), 1, 0, 100);
+        assertNotNull(mitglieder);
+        assertEquals(0, mitglieder.size());
+    }
+
+    @Test
     public void getMitgliedBySearchOneResult() throws Exception {
         IcaSearchedValues searchedValues = new IcaSearchedValues();
         searchedValues.setMitgliedsNummber("11111");
+        searchedValues.setMglStatusId(IcaSearchedValuesStatus.AKTIV);
 
         ArrayList<IcaMitgliedListElement> mitglieder = mitgliedService.getMitgliedBySearch(searchedValues, 1, 0, 100);
         assertEquals(1, mitglieder.size());
+        System.out.println(mitglieder.get(0).getStatus());
      //   assertThat(mitglieder.get(0), instanceOf(IcaMitgliedListElement.class));
     }
 

@@ -36,7 +36,7 @@ public class IcaGruppierungDetail {
     private String sitzRegionId;
     private String sitzStrasse;
 
-    private IcaStatus status;
+    private IcaGruppierungStatus status;
     private String telNummer;
 
     private String versandLand;
@@ -260,11 +260,11 @@ public class IcaGruppierungDetail {
         this.sitzStrasse = sitzStrasse;
     }
 
-    public IcaStatus getStatus() {
+    public IcaGruppierungStatus getStatus() {
         return status;
     }
 
-    public void setStatus(IcaStatus status) {
+    public void setStatus(IcaGruppierungStatus status) {
         this.status = status;
     }
 

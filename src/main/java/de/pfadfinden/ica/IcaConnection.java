@@ -22,8 +22,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
+import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.emptyToNull;
 
 public class IcaConnection implements Closeable {
@@ -42,6 +42,11 @@ public class IcaConnection implements Closeable {
     private static final String URL_STARTUP = "rest/nami/auth/manual/sessionStartup";
 
     public IcaConnection(IcaServer icaServer, String username, String password) throws IcaAuthenticationException {
+
+        Objects.requireNonNull(icaServer,"IcaServer is null");
+        Objects.requireNonNull(emptyToNull(username),"username null or empty");
+        Objects.requireNonNull(emptyToNull(password),"password null or empty");
+
         this.init(icaServer);
 
         try {
@@ -52,6 +57,10 @@ public class IcaConnection implements Closeable {
     }
 
     public IcaConnection(IcaServer icaServer, String session) {
+
+        Objects.requireNonNull(icaServer);
+        Objects.requireNonNull(session);
+
         this.init(icaServer);
 
         Cookie cookie = new Cookie.Builder()
@@ -81,10 +90,6 @@ public class IcaConnection implements Closeable {
     }
 
     private void authenticate(String username, String password) throws IOException, IcaAuthenticationException {
-
-        checkNotNull(emptyToNull(username),"username null or empty");
-        checkNotNull(emptyToNull(password),"password null or empty");
-
         this.apiRateLimiter.acquire(); // may wait
 
         HttpUrl httpUrl = this.getUrlBuilder(false)
@@ -112,6 +117,7 @@ public class IcaConnection implements Closeable {
                 String resultData = response.body().string();
                 IcaApiResponse<Object> resp = gson.fromJson(resultData, new TypeToken<IcaApiResponse<Object>>() {}.getType());
                 logger.debug("Security: Authenticated to ICA using API token: {}.",resp.getApiSessionToken());
+                if(resp.getStatusCode() != 0) throw new IcaAuthenticationException("Authentication on ICA failed.");
             } else {
                 logger.warn("Security: Authentication on ICA failed with response code {}.",response.code());
                 throw new IcaAuthenticationException("Authentication on ICA failed.");
@@ -120,6 +126,10 @@ public class IcaConnection implements Closeable {
     }
 
     public <T> T executeApiRequest(HttpUrl httpUrl, Type resultType) throws IcaApiException {
+
+        Objects.requireNonNull(httpUrl);
+        Objects.requireNonNull(resultType);
+
         Request request = new Request.Builder()
                 .url(httpUrl)
                 .build();
@@ -127,6 +137,9 @@ public class IcaConnection implements Closeable {
     }
 
     public <T> T executeApiRequest(Request request, Type resultType) throws IcaApiException {
+
+        Objects.requireNonNull(request);
+        Objects.requireNonNull(resultType);
 
         this.apiRateLimiter.acquire(); // may wait
 
@@ -150,13 +163,18 @@ public class IcaConnection implements Closeable {
             Type typeWithResponse = IcaResponse.getType(resultType);
             Type typeWithApiResponse = IcaApiResponse.getType(typeWithResponse);
 
-            IcaApiResponse<IcaResponse<T>> result = gson.fromJson(response.body().string(), typeWithApiResponse);
+            Objects.requireNonNull(response.body(),"ICA API returned empty response body.");
+            String resultData = response.body().string();
 
-            if (result == null || result.getResponse() == null || result.getStatusCode() != 0) {
-                logger.error("Ica API returns error: RequestURI {} RequestType {} API ResultStatusCode {}",
+            logger.debug("ICA API Response code '{}' with body: {}",response.code(),resultData);
+            IcaApiResponse<IcaResponse<T>> result = gson.fromJson(resultData, typeWithApiResponse);
+
+            if (result == null || result.getResponse() == null || !result.getResponse().getSuccess() || result.getStatusCode() != 0) {
+                logger.error("Ica API returns error: RequestURI {} RequestType {} API ResultStatusCode {} Body: '{}'",
                         request.url(),
                         request.method(),
-                        response.code()
+                        response.code(),
+                        resultData
                 );
                 throw new IcaApiException(result);
             }
