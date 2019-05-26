@@ -1,11 +1,43 @@
 # Pfadfinden ICA Services
 
-Java Bibliothek für den einfachen Zugriff auf die Mitgliederverwaltung des Bund der Pfadfinderinnen und Pfadfinder e.V..
+Java Bibliothek für den Zugriff auf die Mitgliederverwaltung des Bund der Pfadfinderinnen und Pfadfinder e.V..
 
-## Installation
+## Einrichtung
 
-Die Library ist als Maven POM Projekt ausgelegt und kann als Abhängigkeit hinzugefügt werden.
-```xml
+Die Releaseversion steht in der [jCenter Repository](https://bintray.com/pfadfinden/maven/ica-services) öffentlich zur 
+Verfügung. Bei Nutzung von Build-Management-Tools wie z.B. Gradle oder Maven werden alle Abhängigkeiten zu weiteren 
+Bibliotheken berücksichtigt.
+
+### Gradle Projekte
+
+In der Datei `build.gradle` muss die Repository jCenter und eine Abhängigkeit auf die gewünschte ICA-Services Version 
+ergänzt werden.
+
+```
+repositories {  
+   jcenter()  
+}
+
+dependencies {
+    compile 'de.pfadfinden:ica-services:2.0.0'
+}
+```
+
+### Maven Projekte
+
+In der Datei `pom.xml` muss die Repository jCenter und eine Abhängigkeit auf die gewünschte ICA-Services Version 
+ergänzt werden.
+
+```
+<repositories>
+    <repository>
+      <id>jcenter</id>
+      <url>https://jcenter.bintray.com/</url>
+    </repository>
+</repositories>
+```
+
+```
 <dependencies>
     <dependency>
         <groupId>de.pfadfinden</groupId>
@@ -15,11 +47,9 @@ Die Library ist als Maven POM Projekt ausgelegt und kann als Abhängigkeit hinzu
 <dependencies>
 ```
 
-> Die Library steht aktuell noch nicht im jCenter zur Verfügung.
+### Fremdbibliotheken
 
-## Abhängigkeiten
-
-Diese Anwendung nutzt folgende Bibliotheken von Drittanbietern.
+Die Java Bibliothek nutzt folgende Bibliotheken von Drittanbietern.
 
 | group                     | artifact         | version  |
 | ------------------------- | ---------------- | -------- |
@@ -29,7 +59,7 @@ Diese Anwendung nutzt folgende Bibliotheken von Drittanbietern.
 | org.slf4j                 | jcl-over-slf4j   | 1.7.26   |
 
 
-## Dokumentation
+## Funktionalität
 
 ### Verbindungsaufbau und Authentifizierung
 Mit Instanzierung einer `IcaConnection` wird eine HTTP Session aufgebaut und die Authentifizierung an der ICA API 
