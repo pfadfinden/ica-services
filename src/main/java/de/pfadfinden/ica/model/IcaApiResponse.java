@@ -1,10 +1,9 @@
 package de.pfadfinden.ica.model;
 
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public class IcaApiResponse<ResponseT> {
+public class IcaApiResponse<ResponseT extends IcaResponse> {
     private String servicePrefix;
     private String methodCall;
     private int statusCode;

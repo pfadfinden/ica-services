@@ -6,6 +6,14 @@ import java.util.Collection;
 
 public class IcaGruppierung {
 
+    public IcaGruppierung() {
+    }
+
+    public IcaGruppierung(String descriptor, int id) {
+        this.descriptor = descriptor;
+        this.id = id;
+    }
+
     private String descriptor;
     private int id;
     private Collection<IcaGruppierung> children;

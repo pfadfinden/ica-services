@@ -4,7 +4,6 @@ import de.pfadfinden.ica.IcaConnection;
 import de.pfadfinden.ica.IcaServer;
 import de.pfadfinden.ica.execption.IcaApiException;
 import de.pfadfinden.ica.model.*;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,11 +27,6 @@ public class GruppierungServiceTest {
         IcaConnection icaConnector = new IcaConnection(IcaServer.BDP_QA, properties.getProperty("icausername"),
                 properties.getProperty("icapassword"));
         this.gruppierungService = new GruppierungService(icaConnector);
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
-//        this.icaConnector.close();
     }
 
     @Test
@@ -64,6 +58,15 @@ public class GruppierungServiceTest {
     }
 
     @Test
+    public void getGruppierungenInclDisabled() throws Exception {
+        Collection<IcaGruppierung> icaGruppierungMeckpom = gruppierungService.getGruppierungen(48, false);
+        assertEquals(1, icaGruppierungMeckpom.size());
+
+        Collection<IcaGruppierung> icaGruppierungMeckpomDis = gruppierungService.getGruppierungen(48, true);
+        assertEquals(3, icaGruppierungMeckpomDis.size());
+    }
+
+    @Test
     public void getAllGruppierungen() throws Exception {
         Collection<IcaGruppierung> icaGruppierung = gruppierungService.getAllGruppierungen();
         assertEquals(311, icaGruppierung.size());
@@ -85,4 +88,5 @@ public class GruppierungServiceTest {
                 gruppierungService.getGruppierungDetail(9999999);
         assertFalse(icaGruppierungDetail.isPresent());
     }
+
 }

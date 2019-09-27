@@ -24,11 +24,6 @@ public class ReportServiceTest {
         this.reportService = new ReportService(icaConnector);
     }
 
-    @AfterEach
-    public void tearDown() throws Exception {
-        this.icaConnector.close();
-    }
-
     @Test
     public void getReport() throws Exception {
         HashMap<String, Object> reportParams = new HashMap<>();

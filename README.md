@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    compile 'de.pfadfinden:ica-services:2.0.0'
+    compile 'de.pfadfinden:ica-services:2.3.0'
 }
 ```
 
@@ -42,7 +42,7 @@ ergänzt werden.
     <dependency>
         <groupId>de.pfadfinden</groupId>
         <artifactId>ica-services</artifactId>
-        <version>2.0.0</version>
+        <version>2.3.0</version>
     </dependency>
 <dependencies>
 ```
@@ -53,10 +53,10 @@ Die Java Bibliothek nutzt folgende Bibliotheken von Drittanbietern.
 
 | group                     | artifact         | version  |
 | ------------------------- | ---------------- | -------- |
-| com.squareup.okhttp3      | okhttp           | 3.12.3   |
+| com.squareup.okhttp3      | okhttp           | 3.14.3   |
 | com.google.code.gson      | gson             | 2.8.5    |
-| com.google.guava          | guava            | 27.1-jre |
-| org.slf4j                 | jcl-over-slf4j   | 1.7.26   |
+| com.google.guava          | guava            | 28.1-jre |
+| org.slf4j                 | jcl-over-slf4j   | 1.7.27   |
 
 
 ## Funktionalität
@@ -70,24 +70,8 @@ für erneute Authentifizierung und Aufbau der Session. Bei längerer Nicht-Benut
 IcaConnection icaConnection = new IcaConnection(IcaServer.BDP_QA,"username","password");
 ```
 
-Um die API Session sicher zu beenden und die Ressourcen des HTTP Clients freizugeben, sollte die IcaConnection nach
-Verwendung geschlossen werden.
+Ein explizites schließen oder beenden einer `IcaConnection` ist nicht erforderlich.
 
-```java
-// Nutzung für ein oder mehrere Serviceaufrufe
-icaConnection.close();
-```
-
-Da `java.io.Closeable` implementiert wird, kann alternativ zum manuellen `close` auch das try-with-resources 
-Statement verwendet werden.
-
-```java
-try(
-    IcaConnection icaConnection = new IcaConnection(icaServer,icaCredentials);
-){
-    // Nutzung für ein oder mehrere Serviceaufrufe
-}
-```
 #### Authorisierung anhand Session
 Sollte bereits über einen anderen Weg die Authentifizierung an der MV erfolgt sein, kann der API Aufruf auch direkt 
 mit einer SessionId erfolgen.
@@ -109,11 +93,11 @@ einbinden.
 ### Serviceaufruf
 Sämtliche Serviceaufrufe benötigen eine Instanz des `IcaConnection` im Konstruktor. 
 
-#### MitgliedService
+#### Mitglieder
 Der einfachste Anwendungsfall des Mitgliedservice ist die Abfrage der Mitgliedsdaten zu einer eindeutigen 
 Mitgliedsnummer.
 ```java
-MitgliedService mitgliedService = new MitgliedService(icaConnector);
+MitgliedService mitgliedService = new MitgliedService(icaConnection);
 Optional<IcaMitglied> mitglied = mitgliedService.getMitgliedById(11111);
 mitglied.ifPresent(
         icaMitglied -> System.out.println(icaMitglied.getNachname())
@@ -127,7 +111,7 @@ Sollte die Mitgliedsnummer nicht bekannt sein oder mehrer Mitglieder zu Kriterie
 IcaSearchedValues searchedValues = new IcaSearchedValues();
 searchedValues.setMitgliedsNummber("11111");
 
-MitgliedService mitgliedService = new MitgliedService(icaConnector);
+MitgliedService mitgliedService = new MitgliedService(icaConnection);
 Optional<Collection<IcaMitgliedListElement>> mitglieder = mitgliedService.getMitgliedBySearch(searchedValues,1,0,100);
 
 mitglieder.ifPresent(
@@ -136,18 +120,31 @@ mitglieder.ifPresent(
 
 ```
 
-#### GruppierungService
+#### Gruppierungen
 Die Organisationsstruktur des BdP und seiner Untergliederungen ist in einem hierarchischen Baum abgebildet. Jede 
 Untergliederung (z.B. Landesverband, Bezirk, Stamm) wird als Gruppierung mit einem Elter- und mehreren 
 Kind-Gruppierungen in diesem Baum gespeichert.
 
-
 ```java
+GruppierungService gruppierungService = new GruppierungService(icaConnection);
 
+// Basisgruppierung des authentifizierten Benutzers
+IcaGruppierung icaGruppierung = gruppierungService.getRootGruppierung();
+
+// Kind-Gruppierungen zu einer Gruppierung
+Collection<IcaGruppierung> icaKindGruppierungen = gruppierungService.getChildGruppierungen(1);
 ```
 
+Um den gesamten Gruppierungsbaum eines Benutzers zu erhalten, kann die Methode `getAllGruppierungen` genutzt werden.
+Diese Methode führt zu einem rekursiven Aufruf der `getChildGruppierungen` Methode und ist besonders bei Benutzern
+ mit weitreichenden Zugriffsberechtigungen sehr ressourcenlastig.
 
-#### ReportService
+```java
+// Alle Gruppierungen, inkl. Kinder und Kindeskinder, des authentifizierten Benutzers
+Collection<IcaGruppierung> icaAlleGruppierungen = gruppierungService.getAllGruppierungen();
+```
+
+#### Reports
 Über die Report Funktion der Mitgliederverwaltung könnnen Standardberichte wie z.B. Mitgliederlisten in den Formaten 
 PDF (Portable Document Format, z.B. Adobe Reader) und XLS (Microsoft Excel) generiert werden. 
 

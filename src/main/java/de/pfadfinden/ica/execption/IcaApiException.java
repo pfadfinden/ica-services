@@ -2,6 +2,7 @@ package de.pfadfinden.ica.execption;
 
 
 import de.pfadfinden.ica.model.IcaApiResponse;
+import de.pfadfinden.ica.model.IcaResponse;
 
 public class IcaApiException extends IcaException{
 
@@ -23,8 +24,8 @@ public class IcaApiException extends IcaException{
      * @param resp
      *            Antwort vom NaMi-Server
      */
-    public IcaApiException(IcaApiResponse<? extends Object> resp) {
-        super(resp.getStatusCode() + ": " + resp.getStatusMessage());
+    public IcaApiException(IcaApiResponse<? extends IcaResponse> resp) {
+        super(resp.getResponse().getTitle() + ": " + resp.getResponse().getMessage());
     }
 
     /**

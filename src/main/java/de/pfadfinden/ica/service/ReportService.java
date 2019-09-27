@@ -85,7 +85,7 @@ public class ReportService {
                 .url(downloadUrl)
                 .build();
 
-        try (Response response = icaConnection.getCloseableHttpClient().newCall(request).execute()) {
+        try (Response response = icaConnection.getHttpClient().newCall(request).execute()) {
             if(response.body() == null) throw new IcaException();
             byte[] resultDoc = response.body().bytes();
             if (resultDoc.length < 100) {

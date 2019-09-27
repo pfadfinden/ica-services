@@ -2,16 +2,16 @@ package de.pfadfinden.ica.execption;
 
 
 import de.pfadfinden.ica.model.IcaApiResponse;
+import de.pfadfinden.ica.model.IcaResponse;
 
 public class IcaAuthenticationException extends IcaApiException{
 
     /**
      * Erzeugt die Exception mit der Antwort von NaMi.
      *
-     * @param resp
-     *            Antwort vom NaMi-Server
+     * @param resp Antwort vom ICA-Server
      */
-    public IcaAuthenticationException(IcaApiResponse<? extends Object> resp) {
+    public IcaAuthenticationException(IcaApiResponse<? extends IcaResponse> resp) {
         super(resp);
     }
 
@@ -19,7 +19,6 @@ public class IcaAuthenticationException extends IcaApiException{
      * Erzeugt die Exception mit einer beliebigen Fehlermeldung.
      *
      * @param message
-     *            .
      */
     public IcaAuthenticationException(String message) {
         super(message);

@@ -1,5 +1,4 @@
 package de.pfadfinden.ica;
-
 import com.google.common.util.concurrent.RateLimiter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,8 +13,6 @@ import de.pfadfinden.ica.model.IcaResponse;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
@@ -26,7 +23,7 @@ import java.util.Objects;
 
 import static com.google.common.base.Strings.emptyToNull;
 
-public class IcaConnection implements Closeable {
+public class IcaConnection {
 
     private OkHttpClient okHttpClient;
 
@@ -71,8 +68,7 @@ public class IcaConnection implements Closeable {
                 .secure()
                 .build();
 
-        // ToDo: httpURL!
-        this.cookieJar.saveFromResponse(null, Collections.singletonList(cookie));
+        this.cookieJar.saveFromResponse(HttpUrl.get(icaServer.getHost()), Collections.singletonList(cookie));
     }
 
     private void init(IcaServer icaServer){
@@ -115,7 +111,8 @@ public class IcaConnection implements Closeable {
         ) {
             if (response.code() == 200 && response.body() != null) {
                 String resultData = response.body().string();
-                IcaApiResponse<Object> resp = gson.fromJson(resultData, new TypeToken<IcaApiResponse<Object>>() {}.getType());
+                IcaApiResponse<IcaResponse> resp = gson.fromJson(resultData,
+                        new TypeToken<IcaApiResponse<IcaResponse>>() {}.getType());
                 logger.debug("Security: Authenticated to ICA using API token: {}.",resp.getApiSessionToken());
                 if(resp.getStatusCode() != 0) throw new IcaAuthenticationException("Authentication on ICA failed.");
             } else {
@@ -160,20 +157,16 @@ public class IcaConnection implements Closeable {
                 );
             }
 
-            Type typeWithResponse = IcaResponse.getType(resultType);
-            Type typeWithApiResponse = IcaApiResponse.getType(typeWithResponse);
-
             Objects.requireNonNull(response.body(),"ICA API returned empty response body.");
             String resultData = response.body().string();
 
             logger.debug("ICA API Response code '{}' with body: {}",response.code(),resultData);
-            IcaApiResponse<IcaResponse<T>> result = gson.fromJson(resultData, typeWithApiResponse);
+            IcaApiResponse<IcaResponse<T>> result = gson.fromJson(resultData, this.getWrappedApiType(resultType));
 
             if (result == null || result.getResponse() == null || !result.getResponse().getSuccess() || result.getStatusCode() != 0) {
-                logger.error("Ica API returns error: RequestURI {} RequestType {} API ResultStatusCode {} Body: '{}'",
+                logger.error("ICA API Response unsuccessful: RequestUri='{}' RequestType='{}' ResponseBody='{}'",
                         request.url(),
                         request.method(),
-                        response.code(),
                         resultData
                 );
                 throw new IcaApiException(result);
@@ -198,7 +191,7 @@ public class IcaConnection implements Closeable {
         return builder;
     }
 
-    public OkHttpClient getCloseableHttpClient() {
+    public OkHttpClient getHttpClient(){
         return this.okHttpClient;
     }
 
@@ -206,8 +199,8 @@ public class IcaConnection implements Closeable {
         return gson.toJson(o);
     }
 
-    @Override
-    public void close() {
-
+    private Type getWrappedApiType(Type plainType){
+        return IcaApiResponse.getType(IcaResponse.getType(plainType));
     }
+
 }

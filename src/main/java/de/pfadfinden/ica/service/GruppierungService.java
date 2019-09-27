@@ -10,10 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Services zu Gruppierungen, wie z.B. Landesverbaende, Bezirke und Staemme
@@ -56,7 +53,7 @@ public class GruppierungService {
     }
 
     /**
-     * Finde unmittelbar untergeordneten Kind-Gruppierungen zu einer Gruppierung.
+     * Finde unmittelbar untergeordnete Kind-Gruppierungen zu einer Gruppierung.
      * Methode geht nicht rekursiv vor, nutze {@link #getGruppierungen(int)} um auch Kindeskinder zu finden.
      *
      * @param  gruppierungId ID der Gruppierung
@@ -101,16 +98,29 @@ public class GruppierungService {
      * @throws IcaApiException bei Kommunikationsfehler mit API
      */
     public Collection<IcaGruppierung> getGruppierungen(int gruppierungId) throws IcaApiException {
+        return this.getGruppierungen(gruppierungId,false);
+    }
+
+    /**
+     * Finde alle untergeorndete Gruppierungen einschließlich Kindeskinder.
+     * Um nur unmittelbare Kindgruppierungen zu finden, nutze {@link #getChildGruppierungen(int)}.
+     *
+     * @param  gruppierungId ID der Gruppierung
+     * @param  inclDisabled Inkludiere deaktivierte Gruppierungen
+     * @return {@link IcaGruppierung} einschließlich Kindeskinder zu Gruppierung
+     * @throws IcaApiException bei Kommunikationsfehler mit API
+     */
+    public Collection<IcaGruppierung> getGruppierungen(int gruppierungId, boolean inclDisabled) throws IcaApiException {
 
         Collection<IcaGruppierung> gruppierungen = new ArrayList<>();
 
         Collection<IcaGruppierung> childGruppierungen = this.getChildGruppierungen(gruppierungId);
         for(IcaGruppierung childGruppierung : childGruppierungen){
-            logger.debug("ChildGruppierung #{} ({})",childGruppierung.getId(),childGruppierung.getDescriptor());
 
             // Falls Gruppierung mit zzz beginnt, ist sie deaktiviert und wird ignoriert.
-            if(childGruppierung.isZzz()) continue;
+            if(!inclDisabled && childGruppierung.isZzz()) continue;
 
+            logger.debug("ChildGruppierung #{} ({})",childGruppierung.getId(),childGruppierung.getDescriptor());
             gruppierungen.add(childGruppierung);
 
             // Nur wenn Gruppierungsnummer auf 00 endet, tiefere Ebene in Baum vorhanden

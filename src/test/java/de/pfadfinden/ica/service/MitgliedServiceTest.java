@@ -3,7 +3,6 @@ package de.pfadfinden.ica.service;
 import de.pfadfinden.ica.IcaConnection;
 import de.pfadfinden.ica.IcaServer;
 import de.pfadfinden.ica.model.*;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,11 +27,6 @@ public class MitgliedServiceTest {
         this.icaConnector = new IcaConnection(IcaServer.BDP_QA, properties.getProperty("icausername"),
                 properties.getProperty("icapassword"));
         this.mitgliedService = new MitgliedService(icaConnector);
-    }
-
-    @AfterEach
-    public void tearDown() throws Exception {
-//        this.icaConnector.close();
     }
 
     @Test
