@@ -54,26 +54,39 @@ public class GruppierungService {
 
     /**
      * Finde unmittelbar untergeordnete Kind-Gruppierungen zu einer Gruppierung.
-     * Methode geht nicht rekursiv vor, nutze {@link #getGruppierungen(int)} um auch Kindeskinder zu finden.
      *
      * @param  gruppierungId ID der Gruppierung
      * @return Liste von {@link IcaGruppierung} zu Gruppierung
      * @throws IcaApiException bei Kommunikationsfehler mit API
      */
     public Collection<IcaGruppierung> getChildGruppierungen(int gruppierungId) throws IcaApiException {
-        logger.debug("Calling getChildGruppierungen({})",gruppierungId);
+        return this.getChildGruppierungen(gruppierungId,true);
+    }
 
+    /**
+     * Finde unmittelbar untergeordnete Kind-Gruppierungen zu einer Gruppierung.
+     *
+     * @param  gruppierungId ID der Gruppierung
+     * @param  inclDisabled Deaktivierte Gruppierungen (zzz) einschliessen
+     * @return Liste von {@link IcaGruppierung} zu Gruppierung
+     * @throws IcaApiException bei Kommunikationsfehler mit API
+     */
+    public Collection<IcaGruppierung> getChildGruppierungen(int gruppierungId, boolean inclDisabled) throws IcaApiException {
         HttpUrl httpUrl = icaConnection.getUrlBuilder()
                 .addPathSegments(URL_GRP)
                 .addQueryParameter("node",Integer.toString(gruppierungId))
                 .build();
 
         Type type = new TypeToken<Collection<IcaGruppierung>>() {}.getType();
-        return icaConnection.executeApiRequest(httpUrl, type);
+        Collection<IcaGruppierung> icaGruppierungen = icaConnection.executeApiRequest(httpUrl, type);
+
+        icaGruppierungen.removeIf(icaGruppierung -> icaGruppierung.isZzz() && !inclDisabled);
+        return icaGruppierungen;
     }
 
     /**
-     * Finde alle Gruppierungen. Methode geht ressourcenlastig durch ganzen Gruppierungsbaum.
+     * Finde alle Gruppierungen auf die der Benutzer Zugriff hat.
+     * Methode geht ressourcenlastig durch ganzen Gruppierungsbaum.
      *
      * @return alle {@link IcaGruppierung}
      * @throws IcaApiException bei Kommunikationsfehler mit API
@@ -104,10 +117,11 @@ public class GruppierungService {
     /**
      * Finde alle untergeorndete Gruppierungen einschließlich Kindeskinder.
      * Um nur unmittelbare Kindgruppierungen zu finden, nutze {@link #getChildGruppierungen(int)}.
+     * Rueckgabe als flache Collection, nutze {@link #getGruppierungenTree(IcaGruppierung,boolean)} fuer Baumstruktur.
      *
      * @param  gruppierungId ID der Gruppierung
      * @param  inclDisabled Inkludiere deaktivierte Gruppierungen
-     * @return {@link IcaGruppierung} einschließlich Kindeskinder zu Gruppierung
+     * @return Collection<IcaGruppierung> einschließlich Kindeskinder zu Gruppierung
      * @throws IcaApiException bei Kommunikationsfehler mit API
      */
     public Collection<IcaGruppierung> getGruppierungen(int gruppierungId, boolean inclDisabled) throws IcaApiException {
@@ -126,10 +140,31 @@ public class GruppierungService {
             // Nur wenn Gruppierungsnummer auf 00 endet, tiefere Ebene in Baum vorhanden
             String gruppierungsNummer = childGruppierung.getGruppierungsnummer();
             if(gruppierungsNummer.substring(gruppierungsNummer.length() - 2).equals("00")){
-                gruppierungen.addAll(this.getGruppierungen(childGruppierung.getId()));
+                gruppierungen.addAll(this.getGruppierungen(childGruppierung.getId(),inclDisabled));
             }
         }
         return gruppierungen;
+    }
+
+    /**
+     * Finde alle untergeorndete Gruppierungen einschließlich Kindeskinder.
+     * Rueckgabe erfolgt in hierarchischer Baumstruktur.
+     *
+     * @param  icaGruppierung Basisgruppierung
+     * @param  inclDisabled Inkludiere deaktivierte Gruppierungen
+     * @return {@link IcaGruppierung} einschließlich Kindeskinder zu Gruppierung in Baumstruktur
+     * @throws IcaApiException bei Kommunikationsfehler mit API
+     */
+    public IcaGruppierung getGruppierungenTree(IcaGruppierung icaGruppierung, boolean inclDisabled) throws IcaApiException {
+        Objects.requireNonNull(icaGruppierung);
+        Collection<IcaGruppierung> childGruppierungen = this.getChildGruppierungen(icaGruppierung.getId(),inclDisabled);
+        for(IcaGruppierung childGruppierung : childGruppierungen){
+            // Wenn Gruppierung keine Kinder zulaesst, nicht tiefer iterieren
+            if(!childGruppierung.isChildrenAllowed()) continue;
+            this.getGruppierungenTree(childGruppierung, inclDisabled);
+        }
+        icaGruppierung.setChildren(childGruppierungen);
+        return icaGruppierung;
     }
 
     /**

@@ -19,7 +19,7 @@ repositories {
 }
 
 dependencies {
-    compile 'de.pfadfinden:ica-services:2.3.0'
+    compile 'de.pfadfinden:ica-services:2.4.0'
 }
 ```
 
@@ -42,7 +42,7 @@ ergänzt werden.
     <dependency>
         <groupId>de.pfadfinden</groupId>
         <artifactId>ica-services</artifactId>
-        <version>2.3.0</version>
+        <version>2.4.0</version>
     </dependency>
 <dependencies>
 ```
@@ -53,8 +53,8 @@ Die Java Bibliothek nutzt folgende Bibliotheken von Drittanbietern.
 
 | group                     | artifact         | version  |
 | ------------------------- | ---------------- | -------- |
-| com.squareup.okhttp3      | okhttp           | 3.14.3   |
-| com.google.code.gson      | gson             | 2.8.5    |
+| com.squareup.okhttp3      | okhttp           | 3.14.4   |
+| com.google.code.gson      | gson             | 2.8.6    |
 | com.google.guava          | guava            | 28.1-jre |
 | org.slf4j                 | jcl-over-slf4j   | 1.7.27   |
 

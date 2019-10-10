@@ -38,4 +38,10 @@ class IcaGruppierungTest {
         assertFalse(icaGruppierungStammAktiv.isZzz());
         assertTrue(icaGruppierungStammInaktiv.isZzz());
     }
+
+    @Test
+    void isChildrenAllowed() {
+        assertTrue(icaGruppierungBund.isChildrenAllowed());
+        assertFalse(icaGruppierungStammAktiv.isChildrenAllowed());
+    }
 }

@@ -34,6 +34,10 @@ public class GruppierungServiceTest {
         Collection<IcaGruppierung> icaGruppierung = gruppierungService.getChildGruppierungen(1);
         assertNotNull(icaGruppierung);
         assertEquals(14, icaGruppierung.size());
+        Collection<IcaGruppierung> grpIncl = gruppierungService.getChildGruppierungen(55, true);
+        assertEquals(26, grpIncl.size());
+        Collection<IcaGruppierung> grpExcl = gruppierungService.getChildGruppierungen(55, false);
+        assertEquals(20, grpExcl.size());
     }
 
     @Test
@@ -89,4 +93,10 @@ public class GruppierungServiceTest {
         assertFalse(icaGruppierungDetail.isPresent());
     }
 
+    @Test
+    void gruppierungMitChildren() throws IcaApiException {
+        IcaGruppierung rootGruppierung = gruppierungService.getRootGruppierung();
+        IcaGruppierung gruppierungen = gruppierungService.getGruppierungenTree(rootGruppierung, false);
+        assertNotNull(gruppierungen);
+    }
 }
