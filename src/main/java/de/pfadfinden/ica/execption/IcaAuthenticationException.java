@@ -18,7 +18,7 @@ public class IcaAuthenticationException extends IcaApiException{
     /**
      * Erzeugt die Exception mit einer beliebigen Fehlermeldung.
      *
-     * @param message
+     * @param message Fehlermeldung
      */
     public IcaAuthenticationException(String message) {
         super(message);

@@ -121,7 +121,7 @@ public class GruppierungService {
      *
      * @param  gruppierungId ID der Gruppierung
      * @param  inclDisabled Inkludiere deaktivierte Gruppierungen
-     * @return Collection<IcaGruppierung> einschließlich Kindeskinder zu Gruppierung
+     * @return Collection von IcaGruppierungen einschließlich Kindeskinder zu Gruppierung
      * @throws IcaApiException bei Kommunikationsfehler mit API
      */
     public Collection<IcaGruppierung> getGruppierungen(int gruppierungId, boolean inclDisabled) throws IcaApiException {
