@@ -2,11 +2,6 @@
 
 Java Bibliothek für den Zugriff auf die Mitgliederverwaltung des Bund der Pfadfinderinnen und Pfadfinder e.V..
 
-## Einrichtung
-
-Die Releaseversion steht in der [jCenter Repository](https://bintray.com/pfadfinden/maven/ica-services) öffentlich zur 
-Verfügung. Bei Nutzung von Build-Management-Tools wie z.B. Gradle oder Maven werden alle Abhängigkeiten zu weiteren 
-Bibliotheken berücksichtigt.
 
 ### Gradle Projekte
 
@@ -14,37 +9,9 @@ In der Datei `build.gradle` muss die Repository jCenter und eine Abhängigkeit a
 ergänzt werden.
 
 ```
-repositories {  
-   jcenter()  
-}
-
 dependencies {
-    compile 'de.pfadfinden:ica-services:2.4.0'
+    compile 'de.pfadfinden:ica-services:2.6.0'
 }
-```
-
-### Maven Projekte
-
-In der Datei `pom.xml` muss die Repository jCenter und eine Abhängigkeit auf die gewünschte ICA-Services Version 
-ergänzt werden.
-
-```
-<repositories>
-    <repository>
-      <id>jcenter</id>
-      <url>https://jcenter.bintray.com/</url>
-    </repository>
-</repositories>
-```
-
-```
-<dependencies>
-    <dependency>
-        <groupId>de.pfadfinden</groupId>
-        <artifactId>ica-services</artifactId>
-        <version>2.4.0</version>
-    </dependency>
-<dependencies>
 ```
 
 ### Fremdbibliotheken
@@ -52,11 +19,11 @@ ergänzt werden.
 Die Java Bibliothek nutzt folgende Bibliotheken von Drittanbietern.
 
 | group                     | artifact         | version  |
-| ------------------------- | ---------------- | -------- |
-| com.squareup.okhttp3      | okhttp           | 3.14.4   |
-| com.google.code.gson      | gson             | 2.8.6    |
-| com.google.guava          | guava            | 28.1-jre |
-| org.slf4j                 | jcl-over-slf4j   | 1.7.27   |
+| ------------------------- | ---------------- |----------|
+| com.squareup.okhttp3      | okhttp           | 3.14.9   |
+| com.google.code.gson      | gson             | 2.8.9    |
+| com.google.guava          | guava            | 31.0-jre |
+| org.slf4j                 | jcl-over-slf4j   | 1.7.32   |
 
 
 ## Funktionalität
